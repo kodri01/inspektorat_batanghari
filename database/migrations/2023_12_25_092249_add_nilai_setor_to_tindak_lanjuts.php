@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tindak_lanjuts', function (Blueprint $table) {
-            $table->integer('nilai_setor')->after('nilai_sisa')->nullable();
+            $table->bigInteger('nilai_setor')->after('nilai_sisa')->nullable();
         });
     }
 

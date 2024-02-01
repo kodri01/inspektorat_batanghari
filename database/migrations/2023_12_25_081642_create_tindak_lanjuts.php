@@ -17,12 +17,12 @@ return new class extends Migration
             $table->integer('obrik_id');
             $table->integer('temuan_id');
             $table->integer('lhp_id');
-            $table->string('rekomendasi');
+            $table->bigInteger('rekomendasi');
             $table->string('uraian');
             $table->string('status_tl');
-            $table->integer('nilai_selesai')->nullable();
-            $table->integer('nilai_dalam_proses')->nullable();
-            $table->integer('nilai_sisa')->nullable();
+            $table->bigInteger('nilai_selesai')->nullable();
+            $table->bigInteger('nilai_dalam_proses')->nullable();
+            $table->bigInteger('nilai_sisa')->nullable();
             $table->string('saran');
             $table->string('file');
             $table->integer('status')->nullable();
