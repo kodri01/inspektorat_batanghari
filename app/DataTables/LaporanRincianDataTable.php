@@ -49,14 +49,14 @@ class LaporanRincianDataTable extends DataTable
 
             // Pastikan $role tidak null sebelum menggunakan first()
             if ($role && $role->name == 'superadmin') {
-                return $model->with(['obrik', 'temuan'])->select('tindak_lanjuts.*');
+                return $model->with(['obrik', 'temuan', 'rekomendasi'])->select('tindak_lanjuts.*');
             } else {
-                return $model->with(['obrik', 'temuan'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
+                return $model->with(['obrik', 'temuan', 'rekomendasi'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
             }
         }
 
         // Jika $modelrole atau $role null, maka berikan nilai default atau kembalikan query kosong
-        return $model->with(['obrik', 'temuan'])->where('tindak_lanjuts.id', null);
+        return $model->with(['obrik', 'temuan', 'rekomendasi'])->where('tindak_lanjuts.id', null);
     }
 
     /**
@@ -106,7 +106,7 @@ class LaporanRincianDataTable extends DataTable
                         ->addClass('dataTable-font')
                         ->responsivePriority(2)
                         ->renderJs('number', '.', ',', '', ' Rp. '),
-                    Column::make('temuan.nilai_rekomendasi')
+                    Column::make('rekomendasi.nilai_rekomendasi')
                         ->title('Nilai Rekomendasi')
                         ->addClass('dataTable-font')
                         ->responsivePriority(4)
@@ -147,7 +147,7 @@ class LaporanRincianDataTable extends DataTable
                         ->addClass('dataTable-font')
                         ->responsivePriority(2)
                         ->renderJs('number', '.', ',', '', ' Rp. '),
-                    Column::make('temuan.nilai_rekomendasi')
+                    Column::make('rekomendasi.nilai_rekomendasi')
                         ->title('Nilai Rekomendasi')
                         ->addClass('dataTable-font')
                         ->responsivePriority(4)

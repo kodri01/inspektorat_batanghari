@@ -43,7 +43,8 @@
                                     @endrole
                                     <div class="form-group">
                                         <label for="inputState">Nomor LHP & Tahun</label>
-                                        <select id="inputState" class="form-control" name="lhp">
+                                        <select id="inputState" onchange="getJenis(this)" class="form-control"
+                                            name="lhp">
                                             <option selected disabled>- Pilih Nomor & Tahun LHP -</option>
                                             @foreach ($lhps as $lhp)
                                                 <option value="{{ $lhp->id }}">{{ $lhp->no_lhp }} -
@@ -55,9 +56,7 @@
                                         <label>Jenis Pemeriksaan</label>
                                         <select id="inputState" class="form-control" name="jns_pemeriksaan">
                                             <option selected disabled>- Pilih Jenis Pemeriksaan -</option>
-                                            @foreach ($lhps as $lhp)
-                                                <option value="{{ $lhp->judul }}">{{ $lhp->judul }}</option>
-                                            @endforeach
+
                                         </select>
                                         @error('jns_pemeriksaan')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -211,6 +210,34 @@
                     noOption.text = 'Tidak Ada Obrik yang Tersedia Untuk Wilayah ini';
                     noOption.disabled = true;
                     obrikSelect.appendChild(noOption);
+                }
+            }
+
+            function getJenis(select) {
+                var lhpId = select.value; // Mengambil nilai ID obrik yang dipilih
+                var lhps = @json($lhps); // Menyimpan data temuan ke dalam variabel JavaScript
+
+                var jnsSelect = document.querySelector('select[name="jns_pemeriksaan"]');
+                jnsSelect.innerHTML = '<option selected disabled>- Pilih Jenis Pemeriksaan -</option>';
+
+                var jnsExist = false; // Variabel penanda untuk menunjukkan keberadaan temuan
+
+                lhps.forEach(function(lhp) {
+                    if (lhp.id == lhpId) {
+                        var option = document.createElement('option');
+                        option.value = lhp.judul;
+                        option.text = lhp.judul;
+                        jnsSelect.appendChild(option);
+
+                        jnsExist = true; // Ada temuan yang terkait dengan obrik yang dipilih
+                    }
+                });
+
+                if (!jnsExist) {
+                    var noOption = document.createElement('option');
+                    noOption.text = 'Tidak Ada Jenis Pemeriksaan pada LHP ini';
+                    noOption.disabled = true;
+                    jnsSelect.appendChild(noOption);
                 }
             }
 

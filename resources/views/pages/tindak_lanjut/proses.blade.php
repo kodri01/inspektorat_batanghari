@@ -22,17 +22,17 @@
                                 @csrf
                                 <div class="modal-body">
 
-                                    <input type="text" name="nilai_selesai" value="{{ $tindakan->nilai_selesai }}">
-                                    <input type="text" name="nilai_sisa" value="{{ $tindakan->nilai_sisa }}">
-                                    <input type="text" name="nilai_dalam_proses"
+                                    <input type="hidden" name="nilai_selesai" value="{{ $tindakan->nilai_selesai }}">
+                                    <input type="hidden" name="nilai_sisa" value="{{ $tindakan->nilai_sisa }}">
+                                    <input type="hidden" name="nilai_dalam_proses"
                                         value="{{ $tindakan->nilai_dalam_proses }}">
-                                    <input type="text" name="rekomen" value="{{ $tindakan->rekomendasi }}">
-                                    <input type="text" name="statusTl" value="{{ $tindakan->status_tl }}">
+                                    <input type="hidden" name="rekomen" value="{{ $rekomen->nilai_rekomendasi }}">
+                                    <input type="hidden" name="statusTl" value="{{ $tindakan->status_tl }}">
 
                                     <div class="form-group">
                                         <label>Obrik</label>
                                         <input type="text" disabled
-                                            class="form-control @error('obrik') is-invalid @enderror" name="obri"
+                                            class="form-control @error('obrik') is-invalid @enderror" name="obrik"
                                             value="{{ $obrik->name }}" placeholder="Masukan Nilai Tindak Lanjut">
                                         @error('obrik')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -41,8 +41,8 @@
                                     <div class="form-group">
                                         <label>Temuan</label>
                                         <input type="text" disabled
-                                            class="form-control @error('obrik') is-invalid @enderror" name="obri"
-                                            value="{{ $temuan->ringkasan }} - {{ 'Rp ' . number_format($tindakan->rekomendasi, 0, ',', '.') }}"
+                                            class="form-control @error('obrik') is-invalid @enderror" name="temuan"
+                                            value="{{ $temuan->ringkasan }} - {{ 'Rp ' . number_format($rekomen->nilai_rekomendasi, 0, ',', '.') }}"
                                             placeholder="Masukan Nilai Tindak Lanjut">
                                         @error('obrik')
                                             <div class="invalid-feedback">{{ $message }}</div>

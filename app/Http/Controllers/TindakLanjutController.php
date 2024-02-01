@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\TindakanDataTable;
 use App\Models\Lhp;
 use App\Models\Obrik;
+use App\Models\Rekomendasies;
 use App\Models\Temuans;
 use App\Models\TindakLanjut;
 use App\Models\Wilayah;
@@ -48,13 +49,15 @@ class TindakLanjutController extends Controller
             $lhps = Lhp::get();
             $obriks = Obrik::get();
             $temuans = Temuans::get();
+            $rekomens = Rekomendasies::get();
             $wilayah = Wilayah::get();
-            return view('pages.tindak_lanjut.add', compact('title', 'judul', 'obriks', 'lhps', 'temuans', 'wilayah'));
+            return view('pages.tindak_lanjut.add', compact('title', 'judul', 'obriks', 'lhps', 'temuans', 'wilayah', 'rekomens'));
         } else {
             $lhps = Lhp::get();
             $obriks = Obrik::where('wilayah_id', Auth::user()->wilayah_id)->get();
             $temuans = Temuans::where('wilayah_id', Auth::user()->wilayah_id)->get();
-            return view('pages.tindak_lanjut.add', compact('title', 'judul', 'obriks', 'lhps', 'temuans'));
+            $rekomens = Rekomendasies::where('wilayah_id', Auth::user()->wilayah_id)->get();
+            return view('pages.tindak_lanjut.add', compact('title', 'judul', 'obriks', 'lhps', 'temuans', 'rekomens'));
         }
     }
 
@@ -94,14 +97,12 @@ class TindakLanjutController extends Controller
         $filename  = $namefile . '_' . time() . '.' . $request->file->extension();
         $request->file->move(public_path('uploads'), $filename);
 
-
-        $idTemuan = $request->temuan;
-        $temuan = Temuans::find($idTemuan);
-        $nilaiTemuan = $temuan->nilai_temuan;
+        $idRek = $request->rekomendasi;
+        $rekomen = Rekomendasies::find($idRek);
+        $nilaiRekomen = $rekomen->nilai_rekomendasi;
 
         $statusTl = $request->status;
         $nilaiTindak = $request->nilai_tl;
-        $nilaiRekom = $request->rekomendasi;
         $nilaiSelesai = 0;
         $nilaiDalam = 0;
 
@@ -111,7 +112,7 @@ class TindakLanjutController extends Controller
             $nilaiDalam = $nilaiTindak;
         }
 
-        $nilaiSisa = $nilaiRekom - ($nilaiSelesai + $nilaiDalam);
+        $nilaiSisa = $nilaiRekomen - ($nilaiSelesai + $nilaiDalam);
         $nilaiSetor = $nilaiSelesai + $nilaiSisa;
 
         TindakLanjut::create([
@@ -119,8 +120,7 @@ class TindakLanjutController extends Controller
             'lhp_id' => $request->lhp,
             'obrik_id' => $request->obrik,
             'temuan_id' => $request->temuan,
-            'nilai_temuan' => $nilaiTemuan,
-            'rekomendasi' => $nilaiRekom,
+            'rekomendasi_id' => $request->rekomendasi,
             'uraian' => $request->uraian,
             'status_tl' => $statusTl,
             'nilai_selesai' => $nilaiSelesai,
@@ -154,7 +154,9 @@ class TindakLanjutController extends Controller
         } else {
             $obrik = $tindakan->obrik;
             $temuan = $tindakan->temuan;
-            return view('pages.tindak_lanjut.proses', compact('title', 'judul',  'tindakan', 'obrik', 'temuan'));
+            $rekomen = $tindakan->rekomendasi;
+            // dd($rekomen);
+            return view('pages.tindak_lanjut.proses', compact('title', 'judul',  'tindakan', 'obrik', 'temuan', 'rekomen'));
         }
     }
 

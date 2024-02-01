@@ -102,8 +102,8 @@ class LaporanRekapDataTable extends DataTable
                         DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
 
                         DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_lainnya'),
+                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
+                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
                     ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)

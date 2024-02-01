@@ -6,6 +6,7 @@ use App\DataTables\TemuansDataTable;
 use App\Models\Lhp;
 use App\Models\Obrik;
 use App\Models\PenanggungJawabs;
+use App\Models\Rekomendasies;
 use App\Models\Temuans;
 use App\Models\User;
 use App\Models\Wilayah;
@@ -97,8 +98,6 @@ class TemuansController extends Controller
             'ringkasan' => $request->ringkasan,
             'nilai_temuan' => $request->nilai_temuan,
             'jns_temuan' => $request->jns_temuan,
-            'rekomendasi' => $request->rekomendasi,
-            'nilai_rekomendasi' => $request->nilai_rekomendasi,
         ]);
 
         $obrikId = $request->obrik;
@@ -129,6 +128,16 @@ class TemuansController extends Controller
                 'nilai_obrik' => $nilaiObrik,
             ]);
         }
+
+        Rekomendasies::create([
+            'wilayah_id' => $request->wilayah,
+            'temuan_id' => $temuan->id,
+            'obrik_id' => $request->obrik,
+            'lhp_id' => $request->lhp,
+            'rekomendasi' => $request->rekomendasi,
+            'nilai_rekomendasi' => $request->nilai_rekomendasi,
+        ]);
+
         return redirect()->route('temuan')
             ->with('success', 'Temuan Created Successfully');
     }

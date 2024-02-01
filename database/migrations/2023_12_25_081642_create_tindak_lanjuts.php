@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('obrik_id');
             $table->integer('temuan_id');
             $table->integer('lhp_id');
-            $table->bigInteger('rekomendasi');
+            $table->integer('rekomendasi_id');
             $table->string('uraian');
             $table->string('status_tl');
             $table->bigInteger('nilai_selesai')->nullable();

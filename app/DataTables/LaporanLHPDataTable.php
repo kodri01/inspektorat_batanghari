@@ -51,14 +51,14 @@ class LaporanLHPDataTable extends DataTable
 
             // Pastikan $role tidak null sebelum menggunakan first()
             if ($role && $role->name == 'superadmin') {
-                return $model->with(['obrik', 'temuan'])->select('tindak_lanjuts.*');
+                return $model->with(['obrik', 'temuan', 'rekomendasi'])->select('tindak_lanjuts.*');
             } else {
-                return $model->with(['obrik', 'temuan', 'lhp'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
+                return $model->with(['obrik', 'temuan', 'lhp', 'rekomendasi'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
             }
         }
 
         // Jika $modelrole atau $role null, maka berikan nilai default atau kembalikan query kosong
-        return $model->with(['obrik', 'temuan'])->where('tindak_lanjuts.id', null);
+        return $model->with(['obrik', 'temuan', 'rekomendasi'])->where('tindak_lanjuts.id', null);
     }
 
     /**
@@ -101,8 +101,8 @@ class LaporanLHPDataTable extends DataTable
                 ->addClass('dataTable-font')
                 ->responsivePriority(2)
                 ->renderJs('number', '.', ',', '', ' Rp. '),
-            Column::make('temuan.rekomendasi')->title('Rekomendasi')->addClass('dataTable-font'),
-            Column::make('temuan.nilai_rekomendasi')
+            Column::make('rekomendasi.rekomendasi')->title('Rekomendasi')->addClass('dataTable-font'),
+            Column::make('rekomendasi.nilai_rekomendasi')
                 ->title('Nilai Rekomendasi')
                 ->addClass('dataTable-font')
                 ->responsivePriority(4)
@@ -155,7 +155,8 @@ class LaporanLHPDataTable extends DataTable
             ],
             [
                 '#',
-                'Nomor PHP',
+                'Kategori',
+                'Nomor LHP',
                 'Judul Temuan',
                 'Nilai Temuan',
                 'Rekomendasi',
@@ -164,7 +165,6 @@ class LaporanLHPDataTable extends DataTable
                 'Nilai Selesai',
                 'Dalam Proses',
                 'Belum Ditindak',
-                'Kategori',
                 'Status',
             ],
 
@@ -172,7 +172,7 @@ class LaporanLHPDataTable extends DataTable
         ];
 
         $laporanPHP =
-            TindakLanjut::with(['obrik', 'temuan', 'lhp'])
+            TindakLanjut::with(['obrik', 'temuan', 'lhp', 'rekomendasi'])
             ->select(
                 'tindak_lanjuts.*',
             )
@@ -181,35 +181,37 @@ class LaporanLHPDataTable extends DataTable
             ->get();
 
         foreach ($laporanPHP as $index => $laporan) {
-            $rpNilaiTemuan = 'Rp ' . number_format($laporan->nilai_temuan, 0, ',', '.');
-            $rpNilairekomen = 'Rp ' . number_format($laporan->rekomendasi, 0, ',', '.');
+            $rpNilaiTemuan = 'Rp ' . number_format($laporan->temuan->nilai_temuan, 0, ',', '.');
+            $rpNilairekomen = 'Rp ' . number_format($laporan->rekomendasi->nilai_rekomendasi, 0, ',', '.');
             $rpNilaiselesai = 'Rp ' . number_format($laporan->nilai_selesai, 0, ',', '.');
             $rpNilaidalamProses = 'Rp ' . number_format($laporan->nilai_dalam_proses, 0, ',', '.');
             $rpNilaiSisa = 'Rp ' . number_format($laporan->nilai_sisa, 0, ',', '.');
             $data[] = [
                 $index + 1,
+                $laporan->obrik->jenis,
                 $laporan->lhp->no_lhp,
                 $laporan->temuan->ringkasan,
                 $rpNilaiTemuan,
-                $laporan->temuan->rekomendasi,
+                $laporan->rekomendasi->rekomendasi,
                 $rpNilairekomen,
                 $laporan->uraian,
                 $rpNilaiselesai,
                 $rpNilaidalamProses,
                 $rpNilaiSisa,
-                $laporan->obrik->jenis,
                 $laporan->status_tl,
             ];
         }
 
         $total =
             TindakLanjut::select(
-                DB::raw('(SELECT SUM(nilai_temuan) FROM tindak_lanjuts ) AS total_nilai_temuan'),
-                DB::raw('(SELECT SUM(rekomendasi) FROM tindak_lanjuts ) AS total_nilai_rekomen'),
+                DB::raw('(SELECT SUM(nilai_temuan) FROM temuans ) AS total_nilai_temuan'),
+                DB::raw('(SELECT SUM(CASE WHEN tindak_lanjuts.rekomendasi_id = rekomendasies.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END)) as total_nilai_rekomen'),
                 DB::raw('(SELECT SUM(nilai_selesai) FROM tindak_lanjuts ) AS total_nilai_selesai'),
                 DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts ) AS total_nilai_dalam_proses'),
                 DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) AS total_nilai_sisa'),
             )
+            ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+            ->join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
             ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
             ->whereNull('tindak_lanjuts.deleted_at')
             ->first();
@@ -235,7 +237,7 @@ class LaporanLHPDataTable extends DataTable
             ];
         }
 
-        return Excel::download(new LaporanPHPExport($data), 'laporanPHP_' . date('dmY') . '.xlsx');
+        return Excel::download(new LaporanPHPExport($data), 'laporanPHP_' . date('Y-m-d_H-i-s') . '.xlsx');
     }
 
     public function pdfCustom()
@@ -244,7 +246,7 @@ class LaporanLHPDataTable extends DataTable
         $wilayah = Wilayah::select('name')->where('id', auth()->user()->wilayah_id)->first();
 
         $data =
-            TindakLanjut::with(['obrik', 'temuan', 'lhp'])
+            TindakLanjut::with(['obrik', 'temuan', 'lhp', 'rekomendasi'])
             ->select(
                 'tindak_lanjuts.*',
             )
@@ -254,12 +256,14 @@ class LaporanLHPDataTable extends DataTable
 
         $total =
             TindakLanjut::select(
-                DB::raw('(SELECT SUM(nilai_temuan) FROM tindak_lanjuts ) AS total_nilai_temuan'),
-                DB::raw('(SELECT SUM(rekomendasi) FROM tindak_lanjuts ) AS total_nilai_rekomen'),
+                DB::raw('(SELECT SUM(nilai_temuan) FROM temuans ) AS total_nilai_temuan'),
+                DB::raw('(SELECT SUM(CASE WHEN tindak_lanjuts.rekomendasi_id = rekomendasies.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END)) as total_nilai_rekomen'),
                 DB::raw('(SELECT SUM(nilai_selesai) FROM tindak_lanjuts ) AS total_nilai_selesai'),
                 DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts ) AS total_nilai_dalam_proses'),
                 DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) AS total_nilai_sisa'),
             )
+            ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+            ->join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
             ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
             ->whereNull('tindak_lanjuts.deleted_at')
             ->first();

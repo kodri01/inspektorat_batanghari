@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InspekturController;
-use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanLhpController;
 use App\Http\Controllers\LaporanRekapController;
 use App\Http\Controllers\LaporanRekapitulasiController;
@@ -10,6 +9,7 @@ use App\Http\Controllers\LaporanRincianController;
 use App\Http\Controllers\LhpController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ObrikController;
+use App\Http\Controllers\RekomendasiController;
 use App\Http\Controllers\TemuansController;
 use App\Http\Controllers\TindakLanjutController;
 use App\Http\Controllers\UsersController;
@@ -76,6 +76,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('temuan/update/{id}', [TemuansController::class, 'update'])->name('temuan.update');
         Route::post('temuan/delete/{id}', [TemuansController::class, 'destroy'])->name('temuan.delete');
         Route::post('temuan/status/{id}', [TemuansController::class, 'status'])->name('temuan.status');
+
+        Route::get('rekomendasi/{id}', [RekomendasiController::class, 'index'])->name('rekomendasi');
+        Route::get('rekomendasi/add/{id}', [RekomendasiController::class, 'create'])->name('rekomendasi.add');
+        Route::post('rekomendasi{id}', [RekomendasiController::class, 'store'])->name('rekomendasi.store');
     });
 
     Route::group(['middleware' => ['permission:tindakan-list|tindakan-create|tindakan-edit|tindakan-delete']], function () {
@@ -108,6 +112,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         //Laporan Rekapitulasi
         Route::get('rekapitulasi', [LaporanRekapitulasiController::class, 'index'])->name('laporan_rekapitulasi');
-        // Route::get('/rekap/excel', [LaporanRekapController::class, 'excelRekap'])->name('excel_rekap');
+        Route::get('/rekapitulasi/excel', [LaporanRekapitulasiController::class, 'excel_rekapitulasi'])->name('excel_rekapitulasi');
+        Route::get('/rekapitulasi/pdf', [LaporanRekapitulasiController::class, 'pdf_rekapitulasi'])->name('pdf_rekapitulasi');
     });
 });

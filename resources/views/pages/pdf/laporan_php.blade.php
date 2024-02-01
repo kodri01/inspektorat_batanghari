@@ -84,9 +84,9 @@
                         <td>{{ $d->obrik->jenis }}</td>
                         <td>{{ $d->lhp->no_lhp }}</td>
                         <td>{{ $d->temuan->ringkasan }}</td>
-                        <td>{{ 'Rp ' . number_format($d->nilai_temuan, 0, ',', '.') }}</td>
-                        <td>{{ $d->temuan->rekomendasi }}</td>
-                        <td>{{ 'Rp ' . number_format($d->rekomendasi, 0, ',', '.') }}</td>
+                        <td>{{ 'Rp ' . number_format($d->temuan->nilai_temuan, 0, ',', '.') }}</td>
+                        <td>{{ $d->rekomendasi->rekomendasi }}</td>
+                        <td>{{ 'Rp ' . number_format($d->rekomendasi->nilai_rekomendasi, 0, ',', '.') }}</td>
                         <td>{{ $d->uraian }}</td>
                         <td>{{ 'Rp ' . number_format($d->nilai_selesai, 0, ',', '.') }}</td>
                         <td>{{ 'Rp ' . number_format($d->nilai_dalam_proses, 0, ',', '.') }}</td>

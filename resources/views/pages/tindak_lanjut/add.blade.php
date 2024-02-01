@@ -62,7 +62,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="inputState">Temuan</label>
-                                        <select id="inputState" class="form-control" name="temuan">
+                                        <select id="inputState" onchange="getRekomen(this)" class="form-control"
+                                            name="temuan">
                                             <option selected disabled>- Pilih Temuan -</option>
                                         </select>
                                     </div>
@@ -132,10 +133,7 @@
                 var temuans = @json($temuans); // Menyimpan data temuan ke dalam variabel JavaScript
 
                 var temuanSelect = document.querySelector('select[name="temuan"]');
-                temuanSelect.innerHTML = '<option selected disabled>- Pilih Temuan -</option>'; // Mengosongkan pilihan temuan
-
-                var rekomendasiSelect = document.querySelector('select[name="rekomendasi"]');
-                rekomendasiSelect.innerHTML = '<option selected disabled>- Pilih Rekomendasi -</option>';
+                temuanSelect.innerHTML = '<option selected disabled>- Pilih Temuan -</option>';
 
 
                 var temuanExist = false; // Variabel penanda untuk menunjukkan keberadaan temuan
@@ -147,12 +145,6 @@
                         option.text = temuan.ringkasan + ' - Rp ' + formatNumber(temuan.nilai_temuan);
                         temuanSelect.appendChild(option);
 
-
-                        var option2 = document.createElement('option');
-                        option2.value = temuan.nilai_rekomendasi;
-                        option2.text = temuan.rekomendasi + ' - Rp ' + formatNumber(temuan.nilai_rekomendasi);
-                        rekomendasiSelect.appendChild(option2);
-
                         temuanExist = true; // Ada temuan yang terkait dengan obrik yang dipilih
                     }
                 });
@@ -162,14 +154,37 @@
                     noOption.text = 'Tidak Ada Temuan yang Tersedia Untuk Obrik ini';
                     noOption.disabled = true;
                     temuanSelect.appendChild(noOption);
-
-                    var noOption2 = document.createElement('option');
-                    noOption2.text = 'Tidak Ada Rekomendasi yang Tersedia Untuk Obrik ini';
-                    noOption2.disabled = true;
-                    rekomendasiSelect.appendChild(noOption2);
                 }
+
             }
 
+            function getRekomen(select) {
+                var temuanId = select.value; // Mengambil nilai ID obrik yang dipilih
+                var rekomens = @json($rekomens); // Menyimpan data temuan ke dalam variabel JavaScript
+
+                var rekomendasiSelect = document.querySelector('select[name="rekomendasi"]');
+                rekomendasiSelect.innerHTML = '<option selected disabled>- Pilih Rekomendasi -</option>';
+
+                var rekomenExist = false; // Variabel penanda untuk menunjukkan keberadaan temuan
+
+                rekomens.forEach(function(rekomen) {
+                    if (rekomen.temuan_id == temuanId) {
+                        var option = document.createElement('option');
+                        option.value = rekomen.id;
+                        option.text = rekomen.rekomendasi + ' - Rp ' + formatNumber(rekomen.nilai_rekomendasi);
+                        rekomendasiSelect.appendChild(option);
+
+                        rekomenExist = true; // Ada temuan yang terkait dengan obrik yang dipilih
+                    }
+                });
+
+                if (!rekomenExist) {
+                    var noOption = document.createElement('option');
+                    noOption.text = 'Tidak Ada Rekomendasi yang Tersedia Untuk Obrik ini';
+                    noOption.disabled = true;
+                    rekomendasiSelect.appendChild(noOption);
+                }
+            }
 
             function getWilayah(select) {
                 var wilayahId = select.value; // Mengambil nilai ID obrik yang dipilih
@@ -198,7 +213,6 @@
                     obrikSelect.appendChild(noOption);
                 }
             }
-
 
             function formatNumber(number) {
                 return new Intl.NumberFormat('id-ID').format(number);

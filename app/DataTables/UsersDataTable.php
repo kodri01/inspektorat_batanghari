@@ -31,19 +31,24 @@ class UsersDataTable extends DataTable
             ->addColumn('action', function ($row) {
                 $buttons = '<div class="btn-group gap-2">';
                 $buttons .= '<a href="' . route('users.edit', ['id' => $row->id]) . '" class="btn btn-sm btn-primary">Edit</a>';
-                $buttons .= '
-    <a href="#" class="btn btn-sm btn-danger" onclick="event.preventDefault(); 
-        if(confirm(\'Anda yakin akan menghapus data ini?\')) {
-            document.getElementById(\'form-delete-' . $row->id . '\').submit(); 
-        } else {
-            return false;
-        }"
-    >
-        Delete
-    </a>
-    <form id="form-delete-' . $row->id . '" action="' . route('users.delete', ['id' => $row->id]) . '" method="post" class="d-none">
-        ' . csrf_field() . '
-    </form>';
+                if ($row->id = 1) {
+                    $buttons .= '';
+                } else {
+                    $buttons .= '
+                    <a href="#" class="btn btn-sm btn-danger" onclick="event.preventDefault(); 
+                        if(confirm(\'Anda yakin akan menghapus data ini?\')) {
+                            document.getElementById(\'form-delete-' . $row->id . '\').submit(); 
+                        } else {
+                            return false;
+                        }"
+                    >
+                        Delete
+                    </a>
+                    <form id="form-delete-' . $row->id . '" action="' . route('users.delete', ['id' => $row->id]) . '" method="post" class="d-none">
+                        ' . csrf_field() . '
+                    </form>';
+                }
+
                 $buttons .= '</div>';
 
                 return $buttons;

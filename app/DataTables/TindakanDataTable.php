@@ -42,6 +42,11 @@ class TindakanDataTable extends DataTable
                 if ($role->name == 'superadmin') {
                     $buttons = '<div class="btn-group gap-1">';
                     $buttons .= '<a href="' . route('tindakan.edit', ['id' => $row->id]) . '" class="btn btn-sm btn-primary">Edit</a>';
+                    if ($row->status_tl == "Selesai") {
+                        $buttons .= '';
+                    } else {
+                        $buttons .= '<a href="' . route('tindakan.proses', ['id' => $row->id]) . '"  class="btn btn-sm rounded btn-info">Proses</a>';
+                    }
                     $buttons .= '
 <a href="#" class="btn btn-sm btn-danger" onclick="event.preventDefault(); 
     if(confirm(\'Anda yakin akan menghapus data ini?\')) {
@@ -95,7 +100,7 @@ class TindakanDataTable extends DataTable
         if ($role->name == 'superadmin') {
             return $model->with(['obrik', 'temuan', 'lhp'])->select('tindak_lanjuts.*');
         } else {
-            return $model->with(['obrik', 'temuan', 'lhp'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
+            return $model->with(['obrik', 'temuan', 'lhp', 'rekomendasi'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
         }
     }
 
@@ -128,7 +133,7 @@ class TindakanDataTable extends DataTable
             Column::make('obrik.name')->title('Nama Obrik')->responsivePriority(1)->addClass('dataTable-font'),
             Column::make('temuan.ringkasan')->title('Temuan')->addClass('dataTable-font'),
             Column::make('lhp.tahun')->title('Tahun')->addClass('dataTable-font'),
-            Column::make('rekomendasi')
+            Column::make('rekomendasi.nilai_rekomendasi')
                 ->title('Rekomendasi')
                 ->addClass('dataTable-font')
                 ->responsivePriority(2)

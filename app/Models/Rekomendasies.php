@@ -6,25 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TindakLanjut extends Model
+class Rekomendasies extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'wilayah_id',
-        'temuan_id',
         'obrik_id',
+        'temuan_id',
         'lhp_id',
-        'rekomendasi_id',
-        'uraian',
-        'status_tl',
-        'nilai_selesai',
-        'nilai_dalam_proses',
-        'nilai_sisa',
-        'nilai_setor',
-        'saran',
-        'file',
-        'status',
+        'rekomendasi',
+        'nilai_rekomendasi',
     ];
 
     public function obrik()
@@ -42,8 +34,8 @@ class TindakLanjut extends Model
         return $this->belongsTo(Temuans::class, 'temuan_id');
     }
 
-    public function rekomendasi()
+    public function penanggung()
     {
-        return $this->belongsTo(Rekomendasies::class, 'rekomendasi_id');
+        return $this->belongsTo(PenanggungJawabs::class, 'temuan_id', 'temuan_id');
     }
 }

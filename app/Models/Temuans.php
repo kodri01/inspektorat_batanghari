@@ -20,8 +20,6 @@ class Temuans extends Model
         'ringkasan',
         'nilai_temuan',
         'jns_temuan',
-        'rekomendasi',
-        'nilai_rekomendasi',
         'status',
     ];
 
@@ -35,9 +33,19 @@ class Temuans extends Model
         return $this->belongsTo(Lhp::class, 'lhp_id');
     }
 
+    public function rekomendasi()
+    {
+        return $this->belongsTo(Rekomendasies::class, 'temuan_id', 'id');
+    }
+
     public function penanggungJawabs()
     {
         return $this->hasMany(PenanggungJawabs::class, 'temuan_id', 'id');
+    }
+
+    public function tindakan()
+    {
+        return $this->hasMany(TindakLanjut::class, 'temuan_id', 'id');
     }
 
     public function scopeByYear($query, $year)

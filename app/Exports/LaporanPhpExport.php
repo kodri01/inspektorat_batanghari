@@ -132,7 +132,7 @@ class LaporanPHPExport implements FromCollection, WithHeadings,  WithTitle,  Wit
                 }
 
                 foreach (range('L', 'L') as $column) {
-                    $event->sheet->getColumnDimension($column)->setWidth(14);  // Sesuaikan lebar sel di sini
+                    $event->sheet->getColumnDimension($column)->setWidth(28);  // Sesuaikan lebar sel di sini
                 }
 
                 foreach (range('A', 'A') as $column) {

@@ -172,7 +172,11 @@
                             } ?>><a class="nav-link" href="{{ route('laporan_rekap') }}"><i
                                         class="fas fa-clipboard-list"></i>
                                     <span>Laporan Rekap LHP</span></a></li>
-
+                            <li <?php if ($title == 'Laporan Rekapitulasi') {
+                                echo 'class="active"';
+                            } ?>><a class="nav-link"
+                                    href="{{ route('laporan_rekapitulasi') }}"><i class="fas fa-clipboard-list"></i>
+                                    <span>Laporan Rekapitulasi</span></a></li>
                         </div>
                     </ul>
                 </aside>

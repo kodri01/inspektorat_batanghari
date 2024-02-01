@@ -35,6 +35,7 @@ class TemuansDataTable extends DataTable
 
                 if ($role->name == 'superadmin') {
                     $buttons = '<div class="btn-group gap-2">';
+                    $buttons .= '<a href="' . route('rekomendasi', ['id' => $row->id]) . '" class="btn btn-sm rounded btn-info">Rekomendasi</a>';
                     $buttons .= '<a href="' . route('temuan.edit', ['id' => $row->id]) . '" class="btn btn-sm rounded btn-primary">Edit</a>';
                     $buttons .= '
     <a href="#" class="btn btn-sm btn-danger rounded" onclick="event.preventDefault(); 
@@ -63,6 +64,7 @@ class TemuansDataTable extends DataTable
             <form id="form-temuan-status-' . $row->id . '" action="' . route('temuan.status', ['id' => $row->id]) . '" method="post" class="d-none">
                 ' . csrf_field() . '
             </form>';
+                        $buttons .= '<a href="' . route('rekomendasi', ['id' => $row->id]) . '" class="btn btn-sm rounded btn-info">Rekomendasi</a>';
                         $buttons .= '<a href="' . route('temuan.edit', ['id' => $row->id]) . '" class="btn btn-sm rounded btn-primary">Edit</a>';
                         $buttons .= '</div>';
                         return $buttons;
@@ -85,7 +87,9 @@ class TemuansDataTable extends DataTable
         if ($role->name == 'superadmin') {
             return $model->with(['obrik', 'lhp'])->select('temuans.*');
         } else {
-            return $model->with(['obrik', 'lhp'])->select('temuans.*')->where('temuans.wilayah_id', auth()->user()->wilayah_id);
+            return $model->with(['obrik', 'lhp'])
+                ->select('temuans.*')
+                ->where('temuans.wilayah_id', auth()->user()->wilayah_id);
         }
     }
 
@@ -124,11 +128,6 @@ class TemuansDataTable extends DataTable
                 ->title('Nilai Temuan')
                 ->addClass('dataTable-font')
                 ->responsivePriority(4)
-                ->renderJs('number', '.', ',', '', ' Rp. '),
-            Column::make('nilai_rekomendasi')
-                ->title('Nilai Rekomendasi')
-                ->addClass('dataTable-font')
-                ->responsivePriority(5)
                 ->renderJs('number', '.', ',', '', ' Rp. '),
             Column::computed('action')
                 ->exportable(true)
