@@ -363,7 +363,6 @@ class LaporanRekapDataTable extends DataTable
                 $data =
                     TindakLanjut::with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'temuans.id',
                         'temuans.lhp_id',
                         'obriks.name',
                         DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
@@ -375,7 +374,7 @@ class LaporanRekapDataTable extends DataTable
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
                     ->join('obriks', 'tindak_lanjuts.obrik_id', '=', 'obriks.id')
-                    ->groupBy('temuans.id', 'temuans.lhp_id', 'obriks.name')
+                    ->groupBy('temuans.lhp_id', 'obriks.name')
                     ->whereNull('tindak_lanjuts.deleted_at')
                     ->get();
 
@@ -386,7 +385,6 @@ class LaporanRekapDataTable extends DataTable
                 $data =
                     TindakLanjut::with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'temuans.id',
                         'temuans.lhp_id',
                         DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
                         DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
@@ -398,7 +396,7 @@ class LaporanRekapDataTable extends DataTable
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
                     ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
                     ->whereNull('tindak_lanjuts.deleted_at')
-                    ->groupBy('temuans.id', 'temuans.lhp_id')
+                    ->groupBy('temuans.lhp_id')
                     ->get();
 
                 $pdf = Pdf::loadView('pages.pdf.laporan_rekap', compact('data'))
