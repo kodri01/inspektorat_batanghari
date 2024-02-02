@@ -107,13 +107,13 @@
                     <td>{{ 'Rp ' . number_format($total->total_temuan, 0, ',', '.') }}</td>
                     <td>{{ $total->jml_rekomen }}</td>
                     <td>{{ $total->jml_selesai }} =>
-                        {{ $total->jml_selesai != 0 ? number_format(($total->jml_selesai / $total->jml_rekomen) * 100, 0) . '%' : 'N/A' }}
+                        {{ $total->jml_selesai != 0 ? number_format(($total->jml_selesai / $total->jml_rekomen) * 100, 0) . '%' : '0%' }}
                     </td>
                     <td>{{ $total->jml_dalam }} =>
-                        {{ $total->jml_dalam != 0 ? number_format(($total->jml_dalam / $total->jml_rekomen) * 100, 0) . '%' : 'N/A' }}
+                        {{ $total->jml_dalam != 0 ? number_format(($total->jml_dalam / $total->jml_rekomen) * 100, 0) . '%' : '0%' }}
                     </td>
                     <td>{{ $total->jml_belum }} =>
-                        {{ $total->jml_belum != 0 ? number_format(($total->jml_belum / $total->jml_rekomen) * 100, 0) . '%' : 'N/A' }}
+                        {{ $total->jml_belum != 0 ? number_format(($total->jml_belum / $total->jml_rekomen) * 100, 0) . '%' : '0%' }}
                     </td>
                     <td>{{ 'Rp ' . number_format($total->total_rekomendasi, 0, ',', '.') }}</td>
                     <td>{{ 'Rp ' . number_format($total->total_setor, 0, ',', '.') }}</td>

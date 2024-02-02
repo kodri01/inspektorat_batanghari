@@ -75,22 +75,21 @@ class LaporanRekapitulasiDataTable extends DataTable
         return $model->with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
             ->select(
                 'temuans.lhp_id',
-                'temuans.id',
                 DB::raw('COUNT(temuans.id) as jml_temuan'),
                 DB::raw('SUM(temuans.nilai_temuan) as total_temuan'),
-                DB::raw('(SELECT COUNT(*) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) as jml_rekomen'),
-                DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) as total_rekomendasi'),
-                DB::raw('(SELECT COUNT(*) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id)) as jml_selesai'),
-                DB::raw('(SELECT COUNT(*) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_dalam_proses > 0) as jml_dalam'),
-
-                DB::raw('(SELECT COUNT(*) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id AND rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as jml_belum'),
-
-                DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_setor'),
-                DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_dalam'),
-                DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_sisa'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN 1 ELSE 0 END) as jml_rekomen'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) as total_rekomendasi'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) THEN 1 ELSE 0 END) as jml_selesai'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_dalam_proses > 0 THEN 1 ELSE 0 END) as jml_dalam'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id AND rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts) THEN 1 ELSE 0 END) as jml_belum'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_dalam_proses ELSE 0 END) as total_dalam'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_sisa ELSE 0 END) as total_sisa')
             )
             ->leftjoin('lhps', 'temuans.lhp_id', '=', 'lhps.id')
-            ->groupBy('temuans.lhp_id', 'temuans.id');
+            ->leftjoin('rekomendasies', 'rekomendasies.temuan_id', '=', 'temuans.id')
+            ->leftjoin('tindak_lanjuts', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+            ->groupBy('temuans.lhp_id');
     }
 
     /**
@@ -202,20 +201,21 @@ class LaporanRekapitulasiDataTable extends DataTable
             Temuans::with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
             ->select(
                 'temuans.lhp_id',
-                'temuans.id',
                 DB::raw('COUNT(temuans.id) as jml_temuan'),
                 DB::raw('SUM(temuans.nilai_temuan) as total_temuan'),
-                DB::raw('(SELECT COUNT(*) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) as jml_rekomen'),
-                DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) as total_rekomendasi'),
-                DB::raw('(SELECT COUNT(*) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id)) as jml_selesai'),
-                DB::raw('(SELECT COUNT(*) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_dalam_proses > 0) as jml_dalam'),
-                DB::raw('(SELECT COUNT(*) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id AND rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as jml_belum'),
-                DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_setor'),
-                DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_dalam'),
-                DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_sisa'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN 1 ELSE 0 END) as jml_rekomen'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) as total_rekomendasi'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) THEN 1 ELSE 0 END) as jml_selesai'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_dalam_proses > 0 THEN 1 ELSE 0 END) as jml_dalam'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id AND rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts) THEN 1 ELSE 0 END) as jml_belum'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_dalam_proses ELSE 0 END) as total_dalam'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_sisa ELSE 0 END) as total_sisa')
             )
             ->leftjoin('lhps', 'temuans.lhp_id', '=', 'lhps.id')
-            ->groupBy('temuans.lhp_id', 'temuans.id')
+            ->leftjoin('rekomendasies', 'rekomendasies.temuan_id', '=', 'temuans.id')
+            ->leftjoin('tindak_lanjuts', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+            ->groupBy('temuans.lhp_id')
             ->get();
 
         foreach ($laporanRekapitualasi as $index => $laporan) {
@@ -286,6 +286,29 @@ class LaporanRekapitulasiDataTable extends DataTable
             ->groupBy('temuans.lhp_id', 'temuans.id')
             ->first();
 
+        $rekom = $total->jml_rekomen;
+        $formatted_persen_selesai = 'N/A';
+        $formatted_persen_dalam = 'N/A';
+        $formatted_persen_belum = 'N/A';
+
+        if ($rekom != 0) {
+            $jml_selesai = $total->jml_selesai;
+            $persenSelesai = $jml_selesai / $rekom * 100;
+            $formatted_persen_selesai = number_format($persenSelesai, 0) . '%';
+
+            $jml_dalam = $total->jml_dalam;
+            $persenDalam = $jml_dalam / $rekom * 100;
+            $formatted_persen_dalam = number_format($persenDalam, 0) . '%';
+
+            $jml_belum = $total->jml_belum;
+            $persenBelum = $jml_belum / $rekom * 100;
+            $formatted_persen_belum = number_format($persenBelum, 0) . '%';
+        }
+
+        $selesai = $jml_selesai . ' => ' . $formatted_persen_selesai;
+        $dalam = $jml_dalam . ' => ' . $formatted_persen_dalam;
+        $belum = $jml_belum . ' => ' . $formatted_persen_belum;
+
         $data[] = [
             [
                 '',
@@ -293,9 +316,9 @@ class LaporanRekapitulasiDataTable extends DataTable
                 $total->jml_temuan,
                 'Rp ' . number_format($total->total_temuan, 0, ',', '.'),
                 $total->jml_rekomen,
-                $total->jml_selesai . ' => ' . ($total->jml_selesai / $total->jml_rekomen) * 100 . '%',
-                $total->jml_dalam . ' => ' . ($total->jml_dalam / $total->jml_rekomen) * 100 . '%',
-                $total->jml_belum . ' => ' . ($total->jml_belum / $total->jml_rekomen) * 100 . '%',
+                $selesai,
+                $dalam,
+                $belum,
                 'Rp ' . number_format($total->total_rekomendasi, 0, ',', '.'),
                 'Rp ' . number_format($total->total_setor, 0, ',', '.'),
                 'Rp ' . number_format($total->total_dalam, 0, ',', '.'),
@@ -314,20 +337,21 @@ class LaporanRekapitulasiDataTable extends DataTable
             Temuans::with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
             ->select(
                 'temuans.lhp_id',
-                'temuans.id',
                 DB::raw('COUNT(temuans.id) as jml_temuan'),
                 DB::raw('SUM(temuans.nilai_temuan) as total_temuan'),
-                DB::raw('(SELECT COUNT(*) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) as jml_rekomen'),
-                DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) as total_rekomendasi'),
-                DB::raw('(SELECT COUNT(*) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id)) as jml_selesai'),
-                DB::raw('(SELECT COUNT(*) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_dalam_proses > 0) as jml_dalam'),
-                DB::raw('(SELECT COUNT(*) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id AND rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as jml_belum'),
-                DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_setor'),
-                DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_dalam'),
-                DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts WHERE tindak_lanjuts.temuan_id = temuans.id) as total_sisa'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN 1 ELSE 0 END) as jml_rekomen'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) as total_rekomendasi'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.temuan_id = temuans.id) THEN 1 ELSE 0 END) as jml_selesai'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id AND tindak_lanjuts.nilai_dalam_proses > 0 THEN 1 ELSE 0 END) as jml_dalam'),
+                DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id AND rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts) THEN 1 ELSE 0 END) as jml_belum'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_dalam_proses ELSE 0 END) as total_dalam'),
+                DB::raw('SUM(CASE WHEN tindak_lanjuts.temuan_id = temuans.id THEN tindak_lanjuts.nilai_sisa ELSE 0 END) as total_sisa')
             )
             ->leftjoin('lhps', 'temuans.lhp_id', '=', 'lhps.id')
-            ->groupBy('temuans.lhp_id', 'temuans.id')
+            ->leftjoin('rekomendasies', 'rekomendasies.temuan_id', '=', 'temuans.id')
+            ->leftjoin('tindak_lanjuts', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+            ->groupBy('temuans.lhp_id')
             ->get();
 
         $total =
