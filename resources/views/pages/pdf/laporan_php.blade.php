@@ -78,13 +78,35 @@
                 </tr>
             </thead>
             <tbody>
+                @php $displayedJenis = []; @endphp
                 @foreach ($data as $d)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $d->obrik->jenis }}</td>
-                        <td>{{ $d->lhp->no_lhp }}</td>
-                        <td>{{ $d->temuan->ringkasan }}</td>
-                        <td>{{ 'Rp ' . number_format($d->temuan->nilai_temuan, 0, ',', '.') }}</td>
+                        @if (!in_array($d->obrik->jenis, $displayedJenis))
+                            <td>{{ $d->obrik->jenis }}</td>
+                            @php $displayedJenis[] = $d->obrik->jenis; @endphp
+                        @else
+                            <td></td>
+                        @endif
+                        @if (!in_array($d->lhp->no_lhp, $displayedJenis))
+                            <td>{{ $d->lhp->no_lhp }}</td>
+                            @php $displayedJenis[] = $d->lhp->no_lhp; @endphp
+                        @else
+                            <td></td>
+                        @endif
+                        @if (!in_array($d->temuan->ringkasan, $displayedJenis))
+                            <td>{{ $d->temuan->ringkasan }}</td>
+                            @php $displayedJenis[] = $d->temuan->ringkasan; @endphp
+                        @else
+                            <td></td>
+                        @endif
+                        @if (!in_array($d->temuan->nilai_temuan, $displayedJenis))
+                            <td>{{ 'Rp ' . number_format($d->temuan->nilai_temuan, 0, ',', '.') }}</td>
+                            @php $displayedJenis[] = $d->temuan->nilai_temuan; @endphp
+                        @else
+                            <td></td>
+                        @endif
+
                         <td>{{ $d->rekomendasi->rekomendasi }}</td>
                         <td>{{ 'Rp ' . number_format($d->rekomendasi->nilai_rekomendasi, 0, ',', '.') }}</td>
                         <td>{{ $d->uraian }}</td>
@@ -92,7 +114,6 @@
                         <td>{{ 'Rp ' . number_format($d->nilai_dalam_proses, 0, ',', '.') }}</td>
                         <td>{{ 'Rp ' . number_format($d->nilai_sisa, 0, ',', '.') }}</td>
                         <td>{{ $d->status_tl }}</td>
-
                     </tr>
                 @endforeach
             </tbody>

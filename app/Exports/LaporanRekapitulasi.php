@@ -74,7 +74,7 @@ class LaporanRekapitulasi implements FromCollection, WithHeadings,  WithTitle,  
                 ]);
 
 
-                $event->sheet->getStyle('A5:K5')->applyFromArray([
+                $event->sheet->getStyle('A5:L5')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 12,
@@ -160,9 +160,9 @@ class LaporanRekapitulasi implements FromCollection, WithHeadings,  WithTitle,  
                     ->first();
                 if ($inspektur != null) {
                     $penandaTangan = "Muara Bulian, " . date('d F Y') . "\n" . $inspektur->wilayah . "\n\n\n" . $inspektur->name . "\n" . $inspektur->pangkat_gol . "\n NIP: " . $inspektur->nip;
-                    $event->sheet->setCellValue('K' . ($event->sheet->getHighestRow() + 3), $penandaTangan);
-                    $event->sheet->getStyle('K' . ($event->sheet->getHighestRow()))->getAlignment()->setWrapText(true);
-                    $event->sheet->getStyle('K' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $event->sheet->setCellValue('L' . ($event->sheet->getHighestRow() + 3), $penandaTangan);
+                    $event->sheet->getStyle('L' . ($event->sheet->getHighestRow()))->getAlignment()->setWrapText(true);
+                    $event->sheet->getStyle('L' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $event->sheet->getRowDimension($event->sheet->getHighestRow())->setRowHeight(100);
                 } else {
                     $penandaTangan = '';

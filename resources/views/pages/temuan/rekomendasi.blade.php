@@ -31,7 +31,7 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Rekomendasi</th>
-                            <th scope="col">Nilai Rekomendasi</th>
+                            <th scope="col">Nilai Rekomendasi Tercatat</th>
                             <th scope="col">Penanggung Jawab</th>
                         </tr>
                     </thead>

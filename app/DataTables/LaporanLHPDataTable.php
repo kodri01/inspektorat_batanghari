@@ -53,7 +53,11 @@ class LaporanLHPDataTable extends DataTable
             if ($role && $role->name == 'superadmin') {
                 return $model->with(['obrik', 'temuan', 'rekomendasi'])->select('tindak_lanjuts.*');
             } else {
-                return $model->with(['obrik', 'temuan', 'lhp', 'rekomendasi'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
+                return $model->with(['obrik', 'temuan', 'lhp', 'rekomendasi'])
+                    ->select(
+                        'tindak_lanjuts.*',
+                    )
+                    ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
             }
         }
 
@@ -167,8 +171,6 @@ class LaporanLHPDataTable extends DataTable
                 'Belum Ditindak',
                 'Status',
             ],
-
-
         ];
 
         $laporanPHP =
@@ -179,28 +181,6 @@ class LaporanLHPDataTable extends DataTable
             ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
             ->whereNull('tindak_lanjuts.deleted_at')
             ->get();
-
-        foreach ($laporanPHP as $index => $laporan) {
-            $rpNilaiTemuan = 'Rp ' . number_format($laporan->temuan->nilai_temuan, 0, ',', '.');
-            $rpNilairekomen = 'Rp ' . number_format($laporan->rekomendasi->nilai_rekomendasi, 0, ',', '.');
-            $rpNilaiselesai = 'Rp ' . number_format($laporan->nilai_selesai, 0, ',', '.');
-            $rpNilaidalamProses = 'Rp ' . number_format($laporan->nilai_dalam_proses, 0, ',', '.');
-            $rpNilaiSisa = 'Rp ' . number_format($laporan->nilai_sisa, 0, ',', '.');
-            $data[] = [
-                $index + 1,
-                $laporan->obrik->jenis,
-                $laporan->lhp->no_lhp,
-                $laporan->temuan->ringkasan,
-                $rpNilaiTemuan,
-                $laporan->rekomendasi->rekomendasi,
-                $rpNilairekomen,
-                $laporan->uraian,
-                $rpNilaiselesai,
-                $rpNilaidalamProses,
-                $rpNilaiSisa,
-                $laporan->status_tl,
-            ];
-        }
 
         $total =
             TindakLanjut::select(
@@ -216,6 +196,51 @@ class LaporanLHPDataTable extends DataTable
             ->whereNull('tindak_lanjuts.deleted_at')
             ->first();
 
+        $displayedObrikIds = [];
+        foreach ($laporanPHP as $index => $laporan) {
+            $rpNilaiTemuan = 'Rp ' . number_format($laporan->temuan->nilai_temuan, 0, ',', '.');
+            $rpNilairekomen = 'Rp ' . number_format($laporan->rekomendasi->nilai_rekomendasi, 0, ',', '.');
+            $rpNilaiselesai = 'Rp ' . number_format($laporan->nilai_selesai, 0, ',', '.');
+            $rpNilaidalamProses = 'Rp ' . number_format($laporan->nilai_dalam_proses, 0, ',', '.');
+            $rpNilaiSisa = 'Rp ' . number_format($laporan->nilai_sisa, 0, ',', '.');
+
+            if (!in_array($laporan->obrik_id, $displayedObrikIds)) {
+                $data[] = [
+                    $index + 1,
+                    $laporan->obrik->jenis,
+                    $laporan->lhp->no_lhp,
+                    $laporan->temuan->ringkasan,
+                    $rpNilaiTemuan,
+                    $laporan->rekomendasi->rekomendasi,
+                    $rpNilairekomen,
+                    $laporan->uraian,
+                    $rpNilaiselesai,
+                    $rpNilaidalamProses,
+                    $rpNilaiSisa,
+                    $laporan->status_tl,
+                ];
+
+                // Mark this $laporan->obrik_id as displayed
+                $displayedObrikIds[] = $laporan->obrik_id;
+            } else {
+                // If the $laporan->obrik_id has been displayed, set the specific fields to empty or null
+                $data[] = [
+                    $index + 1,
+                    '',
+                    '',
+                    '',
+                    '',
+                    $laporan->rekomendasi->rekomendasi,
+                    $rpNilairekomen,
+                    $laporan->uraian,
+                    $rpNilaiselesai,
+                    $rpNilaidalamProses,
+                    $rpNilaiSisa,
+                    $laporan->status_tl,
+                ];
+            }
+        }
+
         if ($laporan->wilayah_id != auth()->user()->wilayah_id) {
             $data[] = [
                 ''
@@ -225,6 +250,7 @@ class LaporanLHPDataTable extends DataTable
                 [
                     '',
                     'Jumlah : ',
+                    '',
                     '',
                     'Rp ' . number_format($total->total_nilai_temuan, 0, ',', '.'),
                     '',

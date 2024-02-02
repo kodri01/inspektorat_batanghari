@@ -84,7 +84,7 @@
                         <td>{{ $d->lhp->no_lhp }}</td>
                         <td>{{ $d->lhp->tgl_lhp }}</td>
                         @role('superadmin')
-                            <td>{{ $d->obrik->name }}</td>
+                            <td>{{ $d->name }}</td>
                         @endrole
                         <td>{{ 'Rp ' . number_format($d->total_temuan_negara, 0, ',', '.') }}</td>
                         <td>{{ 'Rp ' . number_format($d->total_temuan_daerah, 0, ',', '.') }}</td>

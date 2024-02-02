@@ -98,7 +98,7 @@
                                     class="fas fa-fire"></i>
                                 <span>Dashboard</span></a></li>
 
-                        <li <?php if ($title == 'Data Temuan' || $title == 'Tambah Data Temuan' || $title == 'Edit Data Temuan') {
+                        <li <?php if ($title == 'Data Temuan' || $title == 'Tambah Data Temuan' || $title == 'Edit Data Temuan' || $title == 'Rekomendasi Temuan' || $title == 'Tambah Rekomendasi Temuan') {
                             echo 'class="active"';
                         } ?>><a class="nav-link" href="{{ route('temuan') }}"><i
                                     class="fas fa-book-open"></i>

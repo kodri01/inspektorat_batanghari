@@ -29,7 +29,7 @@ class TindakLanjut extends Model
 
     public function obrik()
     {
-        return $this->belongsTo(Obrik::class, 'obrik_id');
+        return $this->belongsTo(Obrik::class, 'obrik_id', 'id');
     }
 
     public function lhp()

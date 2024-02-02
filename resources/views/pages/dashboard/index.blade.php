@@ -50,7 +50,7 @@
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                 <div class="card card-statistic-1">
-                    <div class="card-icon bg-danger">
+                    <div class="card-icon bg-info">
                         <i class="fas fa-award my-4"></i>
                     </div>
                     <div class="card-wrap">
@@ -89,6 +89,21 @@
                         </div>
                         <div class="card-body">
                             <h2> {{ $dalamProses }} </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon bg-danger">
+                        <i class="fas fa-award my-4"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-header">
+                            <h4>Tindak Lanjut Belum Diproses</h4>
+                        </div>
+                        <div class="card-body">
+                            <h2> {{ $belum->belum }} </h2>
                         </div>
                     </div>
                 </div>

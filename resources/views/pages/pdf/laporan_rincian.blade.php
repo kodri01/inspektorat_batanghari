@@ -80,13 +80,30 @@
                 </tr>
             </thead>
             <tbody>
+                @php $displayedJenis = []; @endphp
                 @foreach ($data as $d)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $d->jenis }}</td>
-                        <td>{{ $d->name }}</td>
-                        <td>{{ 'Rp ' . number_format($d->nilai_temuan, 0, ',', '.') }}</td>
-                        <td colspan="2">{{ 'Rp ' . number_format($d->nilai_rekomendasi, 0, ',', '.') }}</td>
+                        @if (!in_array($d->obrik->jenis, $displayedJenis))
+                            <td>{{ $d->obrik->jenis }}</td>
+                            @php $displayedJenis[] = $d->obrik->jenis; @endphp
+                        @else
+                            <td></td>
+                        @endif
+                        @if (!in_array($d->obrik->name, $displayedJenis))
+                            <td>{{ $d->obrik->name }}</td>
+                            @php $displayedJenis[] = $d->obrik->name; @endphp
+                        @else
+                            <td></td>
+                        @endif
+                        @if (!in_array($d->temuan->nilai_temuan, $displayedJenis))
+                            <td>{{ 'Rp ' . number_format($d->temuan->nilai_temuan, 0, ',', '.') }}</td>
+                            @php $displayedJenis[] = $d->temuan->nilai_temuan; @endphp
+                        @else
+                            <td></td>
+                        @endif
+                        <td colspan="2">{{ 'Rp ' . number_format($d->rekomendasi->nilai_rekomendasi, 0, ',', '.') }}
+                        </td>
                         <td colspan="2">{{ 'Rp ' . number_format($d->nilai_selesai, 0, ',', '.') }}</td>
                         <td colspan="2">{{ 'Rp ' . number_format($d->nilai_dalam_proses, 0, ',', '.') }}</td>
                         <td colspan="2">{{ 'Rp ' . number_format($d->nilai_sisa, 0, ',', '.') }}</td>
@@ -106,7 +123,7 @@
                     <td colspan="2">{{ 'Rp ' . number_format($total->total_nilai_dalam_proses, 0, ',', '.') }}</td>
                     <td colspan="2">{{ 'Rp ' . number_format($total->total_nilai_sisa, 0, ',', '.') }}</td>
                     @role('superadmin')
-                        <td colspan="2">{{ 'Rp ' . number_format($total->total_nilai_sisa, 0, ',', '.') }}</td>
+                        <td colspan="2">{{ 'Rp ' . number_format($total->total_setor, 0, ',', '.') }}</td>
                     @endrole
                 </tr>
             </tfoot>

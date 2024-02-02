@@ -35,14 +35,20 @@ class DashboardController extends Controller
             $tindakan = TindakLanjut::count();
             $selesai = TindakLanjut::where('status_tl', 'Selesai')->count();
             $dalamProses = TindakLanjut::where('status_tl', 'Dalam Proses')->count();
-            return view('pages.dashboard.index', compact('title', 'judul', 'obrik', 'temuan', 'tindakan', 'selesai', 'dalamProses'));
+            $belum = TindakLanjut::select(
+                DB::raw('(SELECT COUNT(id) FROM rekomendasies WHERE rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as belum'),
+            )->first();
+            return view('pages.dashboard.index', compact('title', 'judul', 'obrik', 'temuan', 'tindakan', 'selesai', 'dalamProses', 'belum'));
         } else {
             $obrik = Obrik::where('wilayah_id', Auth::user()->wilayah_id)->count();
             $temuan = Temuans::where('wilayah_id', Auth::user()->wilayah_id)->count();
             $tindakan = TindakLanjut::where('wilayah_id', Auth::user()->wilayah_id)->count();
             $selesai = TindakLanjut::where('wilayah_id', Auth::user()->wilayah_id)->where('status_tl', 'Selesai')->count();
             $dalamProses = TindakLanjut::where('wilayah_id', Auth::user()->wilayah_id)->where('status_tl', 'Dalam Proses')->count();
-            return view('pages.dashboard.index', compact('title', 'judul', 'obrik', 'temuan', 'tindakan', 'selesai', 'dalamProses'));
+            $belum = TindakLanjut::select(
+                DB::raw('(SELECT COUNT(id) FROM rekomendasies WHERE rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as belum'),
+            )->first();
+            return view('pages.dashboard.index', compact('title', 'judul', 'obrik', 'temuan', 'tindakan', 'selesai', 'dalamProses', 'belum'));
         }
     }
 

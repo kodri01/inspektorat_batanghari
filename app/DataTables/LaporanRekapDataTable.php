@@ -80,34 +80,36 @@ class LaporanRekapDataTable extends DataTable
             if ($role && $role->name == 'superadmin') {
                 return $model->with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'tindak_lanjuts.lhp_id',
-                        'temuans.obrik_id',
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
-
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
-
+                        'temuans.id',
+                        'temuans.lhp_id',
+                        'obriks.name',
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
-                    ->groupBy('tindak_lanjuts.lhp_id',  'temuans.obrik_id');
+                    ->join('obriks', 'tindak_lanjuts.obrik_id', '=', 'obriks.id')
+                    ->groupBy('temuans.id', 'temuans.lhp_id', 'obriks.name')
+                    ->whereNull('tindak_lanjuts.deleted_at');
             } else {
                 return $model->with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'tindak_lanjuts.lhp_id',
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
-
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
+                        'temuans.id',
+                        'temuans.lhp_id',
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
                     ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
-                    ->groupBy('tindak_lanjuts.lhp_id');
+                    ->whereNull('tindak_lanjuts.deleted_at')
+                    ->groupBy('temuans.id', 'temuans.lhp_id');
             }
         }
     }
@@ -155,7 +157,7 @@ class LaporanRekapDataTable extends DataTable
                     Column::make('jenis_periksa')->title('Tahun & Jenis Pemeriksaan')->responsivePriority(1)->addClass('dataTable-font'),
                     Column::make('lhp.no_lhp')->title('No. LHP')->addClass('dataTable-font'),
                     Column::make('lhp.tgl_lhp')->title('Tgl LHP')->addClass('dataTable-font'),
-                    Column::make('obrik.name')->title('Nama Obrik')->addClass('dataTable-font'),
+                    Column::make('name')->title('Nama Obrik')->addClass('dataTable-font'),
                     Column::make('kerugian_negara')->addClass('dataTable-font')->title('Temuan (Kerugian Negara)')
                         ->renderJs('number', '.', ',', '', ' Rp. '),
                     Column::make('daerah')->addClass('dataTable-font')->title('Temuan (Kerugian Daerah)')
@@ -241,18 +243,19 @@ class LaporanRekapDataTable extends DataTable
                 $laporanRekap =
                     TindakLanjut::with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'tindak_lanjuts.lhp_id',
-                        'temuans.obrik_id',
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
-
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
+                        'temuans.id',
+                        'temuans.lhp_id',
+                        'obriks.name',
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
-                    ->groupBy('tindak_lanjuts.lhp_id',  'temuans.obrik_id')
+                    ->join('obriks', 'tindak_lanjuts.obrik_id', '=', 'obriks.id')
+                    ->groupBy('temuans.id', 'temuans.lhp_id', 'obriks.name')
                     ->whereNull('tindak_lanjuts.deleted_at')
                     ->get();
 
@@ -272,7 +275,7 @@ class LaporanRekapDataTable extends DataTable
                         $thnJenis,
                         $laporan->lhp->no_lhp,
                         $laporan->lhp->tgl_lhp,
-                        $laporan->obrik->name,
+                        $laporan->name,
                         $rugiNegara,
                         $rugiDaerah,
                         $lainnya,
@@ -307,18 +310,18 @@ class LaporanRekapDataTable extends DataTable
                 $laporanRekap =
                     TindakLanjut::with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'tindak_lanjuts.lhp_id',
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
-
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_lainnya'),
+                        'temuans.id',
+                        'temuans.lhp_id',
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
                     ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
-                    ->groupBy('tindak_lanjuts.lhp_id')
+                    ->groupBy('temuans.id', 'temuans.lhp_id')
                     ->whereNull('tindak_lanjuts.deleted_at')
                     ->get();
 
@@ -364,18 +367,19 @@ class LaporanRekapDataTable extends DataTable
                 $data =
                     TindakLanjut::with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'tindak_lanjuts.lhp_id',
-                        'temuans.obrik_id',
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
-
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_lainnya'),
+                        'temuans.id',
+                        'temuans.lhp_id',
+                        'obriks.name',
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
-                    ->groupBy('tindak_lanjuts.lhp_id', 'temuans.obrik_id')
+                    ->join('obriks', 'tindak_lanjuts.obrik_id', '=', 'obriks.id')
+                    ->groupBy('temuans.id', 'temuans.lhp_id', 'obriks.name')
                     ->whereNull('tindak_lanjuts.deleted_at')
                     ->get();
 
@@ -386,19 +390,19 @@ class LaporanRekapDataTable extends DataTable
                 $data =
                     TindakLanjut::with(['obrik', 'temuan', 'lhp'])
                     ->select(
-                        'tindak_lanjuts.lhp_id',
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
-
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_daerah'),
-                        DB::raw('SUM(CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_temuan ELSE 0 END) as total_setor_lainnya'),
+                        'temuans.id',
+                        'temuans.lhp_id',
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN temuans.nilai_temuan ELSE 0 END) as total_temuan_lainnya'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Kerugian Negara" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_negara'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Daerah" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_daerah'),
+                        DB::raw('SUM(DISTINCT CASE WHEN temuans.jns_temuan = "Lain-lainnya" THEN tindak_lanjuts.nilai_setor ELSE 0 END) as total_setor_lainnya'),
                     )
                     ->join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
                     ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
-                    ->groupBy('tindak_lanjuts.lhp_id')
                     ->whereNull('tindak_lanjuts.deleted_at')
+                    ->groupBy('temuans.id', 'temuans.lhp_id')
                     ->get();
 
                 $pdf = Pdf::loadView('pages.pdf.laporan_rekap', compact('data'))
