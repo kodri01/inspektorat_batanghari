@@ -110,11 +110,11 @@
                                 <span>Tindak Lanjut</span></a></li>
 
                         @role('Irban')
-                            <li <?php if ($title == 'Upload LHP') {
+                            <li <?php if ($title == 'Upload LHP' || $title == 'Data LHP') {
                                 echo 'class="active"';
-                            } ?>><a class="nav-link" href="{{ route('lhp.create') }}"><i
+                            } ?>><a class="nav-link" href="{{ route('lhp') }}"><i
                                         class="fas fa-file-upload"></i>
-                                    <span>Upload LHP</span></a></li>
+                                    <span>LHP</span></a></li>
                         @endrole
                         @role('superadmin')
                             <li <?php if ($title == 'Users LHP Batanghari' || $title == 'Tambah Data Users' || $title == 'Edit Data Users') {

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\lhp;
+use App\DataTables\LHPDataTable;
+use App\Models\Lhp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,9 +12,11 @@ class LhpController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(LHPDataTable $dataTable)
     {
-        //
+        $title = 'Data LHP';
+        $judul = 'Data LHP';
+        return $dataTable->render('pages.lhp.index', compact('title', 'judul'));
     }
 
     /**
@@ -85,17 +88,50 @@ class LhpController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(lhp $lhp)
+    public function edit($id)
     {
-        //
+        $title = 'Upload LHP';
+        $judul = 'Upload LHP';
+        $lhp = Lhp::find($id);
+        return view('pages.lhp.edit', compact('title', 'judul', 'lhp'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, lhp $lhp)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'tahun' => 'required',
+            'no_lhp'     => 'required',
+            'tgl_lhp'     => 'required',
+            'judul'      => 'required',
+        ];
+
+        $messages = [
+            'tahun.required'  => 'Tahun wajib diisi',
+            'no_lhp.required'       => 'Nomor LHP Wajib diisi',
+            'tgl_lhp.required'  => 'Tanggal LHP Wajib diisi',
+            'judul.required' => 'Judul LHP wajib diisi',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $lhp = Lhp::find($id);
+        $lhp->update([
+            'tahun' => $request->tahun,
+            'no_lhp' => $request->no_lhp,
+            'tgl_lhp' => $request->tgl_lhp,
+            'judul' => $request->judul,
+        ]);
+
+
+        return redirect()->route('lhp')
+            ->with('success', 'LHP Updated Successfully');
     }
 
     /**

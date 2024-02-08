@@ -64,8 +64,11 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::group(['middleware' => 'role:Irban'], function () {
-        Route::get('lhp', [LhpController::class, 'create'])->name('lhp.create');
+        Route::get('lhp', [LhpController::class, 'index'])->name('lhp');
+        Route::get('lhp/add', [LhpController::class, 'create'])->name('lhp.create');
         Route::post('lhp', [LhpController::class, 'store'])->name('lhp.store');
+        Route::get('lhp/edit/{id}', [LhpController::class, 'edit'])->name('lhp.edit');
+        Route::post('lhp/update/{id}', [LhpController::class, 'update'])->name('lhp.update');
     });
 
     Route::group(['middleware' => ['permission:temuan-list|temuan-create|temuan-edit|temuan-delete']], function () {
