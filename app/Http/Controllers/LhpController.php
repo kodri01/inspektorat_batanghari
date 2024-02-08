@@ -73,7 +73,7 @@ class LhpController extends Controller
             'upload' => $filename,
         ]);
 
-        return redirect()->route('dashboard')
+        return redirect()->route('lhp')
             ->with('success', 'LHP Uploaded Successfully');
     }
 
