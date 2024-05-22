@@ -48,7 +48,7 @@ class LhpController extends Controller
             'no_lhp.required'       => 'Nomor LHP Wajib diisi',
             'tgl_lhp.required'  => 'Tanggal LHP Wajib diisi',
             'judul.required' => 'Judul LHP wajib diisi',
-            'file.required'  => 'File Registrasi Ulang wajib diupload',
+            'file.required'  => 'File LHP wajib diupload',
             'file.max'  => 'Ukuran File Maximal 5MB',
             'file.mimes'  => 'File dalam bentuk PDF',
         ];
