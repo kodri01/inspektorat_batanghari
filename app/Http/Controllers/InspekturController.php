@@ -46,7 +46,7 @@ class InspekturController extends Controller
     {
         $rules = [
             'name' => 'required|min:3',
-            'nip'     => 'required|min:10',
+            'nip'     => 'required|min:18|max:18',
             'pangkat_gol'      => 'required',
         ];
 
@@ -54,7 +54,8 @@ class InspekturController extends Controller
             'name.required'  => 'Nama Lengkap wajib diisi',
             'name.min'       => 'Nama Lengkap minimal 3 karakter',
             'nip.required'  => 'Nomor NIP Wajib diisi',
-            'nip.min'       => 'Nomor NIP minimal 10 karakter',
+            'nip.min'       => 'Panjang NIP 18 karakter',
+            'nip.max'       => 'Panjang NIP 18 karakter',
             'pangkat_gol.required' => 'Pangkat Golongan wajib diisi',
         ];
         $validator = Validator::make($request->all(), $rules, $messages);

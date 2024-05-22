@@ -49,6 +49,15 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                    <div class="form-group">
+                                        <label for="file">File</label>
+                                        <input type="hidden" value="{{ $lhp->upload }}" name="filex">
+                                        <input type="file" class="form-control @error('file') is-invalid @enderror"
+                                            id="file" name="file" aria-describedby="file">
+                                        @error('file')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <div class="modal-footer bg-whitesmoke gap-3">
                                         <a href="{{ route('lhp') }}" type="button" class="btn btn-danger">Batal</a>
                                         <button class="btn btn-primary" name="tambahData">Simpan</button>

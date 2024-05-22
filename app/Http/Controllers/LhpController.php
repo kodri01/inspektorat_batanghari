@@ -129,12 +129,20 @@ class LhpController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        if ($request->file == !null) {
+            $filename1 = str_replace(' ', '_', $request->file->getClientOriginalName());
+            $request->kk->move(public_path('uploads'), $filename1);
+        } else {
+            $filename1 = $request->filex;
+        }
+
         $lhp = Lhp::find($id);
         $lhp->update([
             'tahun' => $request->tahun,
             'no_lhp' => $request->no_lhp,
             'tgl_lhp' => $request->tgl_lhp,
             'judul' => $request->judul,
+            'upload' => $filename1,
         ]);
 
 
