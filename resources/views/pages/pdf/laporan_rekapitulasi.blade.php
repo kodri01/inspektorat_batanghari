@@ -100,7 +100,7 @@
                     </tr>
                 @endforeach
             </tbody>
-            <tfoot>
+            {{-- <tfoot>
                 <tr>
                     <td colspan="2" class="end">Jumlah :</td>
                     <td>{{ $total->jml_temuan }}</td>
@@ -120,7 +120,7 @@
                     <td>{{ 'Rp ' . number_format($total->total_dalam, 0, ',', '.') }}</td>
                     <td>{{ 'Rp ' . number_format($total->total_sisa, 0, ',', '.') }}</td>
                 </tr>
-            </tfoot>
+            </tfoot> --}}
         </table>
 
         <div class="inpektur">

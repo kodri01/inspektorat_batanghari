@@ -41,12 +41,12 @@ class TindakanDataTable extends DataTable
 
                 if ($role->name == 'superadmin') {
                     $buttons = '<div class="btn-group gap-1">';
-                    $buttons .= '<a href="' . route('tindakan.edit', ['id' => $row->id]) . '" class="btn btn-sm btn-primary">Edit</a>';
-                    if ($row->status_tl == "Selesai") {
-                        $buttons .= '';
-                    } else {
-                        $buttons .= '<a href="' . route('tindakan.proses', ['id' => $row->id]) . '"  class="btn btn-sm rounded btn-info">Proses</a>';
-                    }
+                    // $buttons .= '<a href="' . route('tindakan.edit', ['id' => $row->id]) . '" class="btn btn-sm btn-primary">Edit</a>';
+                    // if ($row->status_tl == "Selesai") {
+                    //     $buttons .= '';
+                    // } else {
+                    //     $buttons .= '<a href="' . route('tindakan.proses', ['id' => $row->id]) . '"  class="btn btn-sm rounded btn-info">Proses</a>';
+                    // }
                     $buttons .= '
 <a href="#" class="btn btn-sm btn-danger" onclick="event.preventDefault(); 
     if(confirm(\'Anda yakin akan menghapus data ini?\')) {
@@ -98,7 +98,7 @@ class TindakanDataTable extends DataTable
         $modelrole = DB::table('model_has_roles')->where('model_id', auth()->user()->id)->first();
         $role = Role::where('id', $modelrole->role_id)->first();
         if ($role->name == 'superadmin') {
-            return $model->with(['obrik', 'temuan', 'lhp'])->select('tindak_lanjuts.*');
+            return $model->with(['obrik', 'temuan', 'lhp', 'rekomendasi'])->select('tindak_lanjuts.*');
         } else {
             return $model->with(['obrik', 'temuan', 'lhp', 'rekomendasi'])->select('tindak_lanjuts.*')->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id);
         }

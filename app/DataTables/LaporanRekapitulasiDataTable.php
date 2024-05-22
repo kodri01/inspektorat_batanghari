@@ -30,10 +30,11 @@ class LaporanRekapitulasiDataTable extends DataTable
                 static $count = 0;
                 return ++$count;
             })
+
             ->addColumn('selesai', function ($data) {
                 $rekom = $data->jml_rekomen;
-                $selesai = $data->jml_selesai;
                 if ($rekom != 0) {
+                    $selesai = $data->jml_selesai;
                     $persen = $selesai / $rekom * 100;
                     $formatted_persen = number_format($persen, 0) . '%';
                 } else {
@@ -44,8 +45,8 @@ class LaporanRekapitulasiDataTable extends DataTable
 
             ->addColumn('dalam', function ($data) {
                 $rekom = $data->jml_rekomen;
-                $dalam = $data->jml_dalam;
                 if ($rekom != 0) {
+                    $dalam = $data->jml_dalam;
                     $persen = $dalam / $rekom * 100;
                     $formatted_persen = number_format($persen, 0) . '%';
                 } else {
@@ -55,8 +56,8 @@ class LaporanRekapitulasiDataTable extends DataTable
             })
             ->addColumn('belum', function ($data) {
                 $rekom = $data->jml_rekomen;
-                $belum = $data->jml_belum;
                 if ($rekom != 0) {
+                    $belum = $data->jml_belum;
                     $persen = $belum / $rekom * 100;
                     $formatted_persen = number_format($persen, 0) . '%';
                 } else {
@@ -75,7 +76,7 @@ class LaporanRekapitulasiDataTable extends DataTable
         return $model->with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
             ->select(
                 'temuans.lhp_id',
-                DB::raw('COUNT(temuans.id) as jml_temuan'),
+                DB::raw('COUNT(CASE WHEN THEN temuans.id ) as jml_temuan'),
                 DB::raw('SUM(temuans.nilai_temuan) as total_temuan'),
                 DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN 1 ELSE 0 END) as jml_rekomen'),
                 DB::raw('SUM(CASE WHEN rekomendasies.temuan_id = temuans.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) as total_rekomendasi'),
@@ -266,65 +267,65 @@ class LaporanRekapitulasiDataTable extends DataTable
             ];
         }
 
-        $total =
-            Temuans::with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
-            ->select(
-                'temuans.lhp_id',
-                'temuans.id',
-                DB::raw('(SELECT COUNT(id) FROM temuans )as jml_temuan'),
-                DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) as total_temuan'),
-                DB::raw('(SELECT COUNT(id) FROM rekomendasies) as jml_rekomen'),
-                DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies) as total_rekomendasi'),
-                DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts ) as total_setor'),
-                DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts) as total_dalam'),
-                DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) as total_sisa'),
-                DB::raw('(SELECT COUNT(nilai_selesai) FROM tindak_lanjuts WHERE nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies )) as jml_selesai'),
-                DB::raw('(SELECT COUNT(nilai_dalam_proses) FROM tindak_lanjuts WHERE nilai_dalam_proses != 0 ) as jml_dalam'),
-                DB::raw('(SELECT COUNT(id) FROM rekomendasies WHERE rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as jml_belum'),
-            )
-            ->leftjoin('lhps', 'temuans.lhp_id', '=', 'lhps.id')
-            ->groupBy('temuans.lhp_id', 'temuans.id')
-            ->first();
+        // $total =
+        //     Temuans::with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
+        //     ->select(
+        //         'temuans.lhp_id',
+        //         'temuans.id',
+        //         DB::raw('(SELECT COUNT(id) FROM temuans )as jml_temuan'),
+        //         DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) as total_temuan'),
+        //         DB::raw('(SELECT COUNT(id) FROM rekomendasies) as jml_rekomen'),
+        //         DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies) as total_rekomendasi'),
+        //         DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts ) as total_setor'),
+        //         DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts) as total_dalam'),
+        //         DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) as total_sisa'),
+        //         DB::raw('(SELECT COUNT(nilai_selesai) FROM tindak_lanjuts WHERE nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies )) as jml_selesai'),
+        //         DB::raw('(SELECT COUNT(nilai_dalam_proses) FROM tindak_lanjuts WHERE nilai_dalam_proses != 0 ) as jml_dalam'),
+        //         DB::raw('(SELECT COUNT(id) FROM rekomendasies WHERE rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as jml_belum'),
+        //     )
+        //     ->leftjoin('lhps', 'temuans.lhp_id', '=', 'lhps.id')
+        //     ->groupBy('temuans.lhp_id', 'temuans.id')
+        //     ->first();
 
-        $rekom = $total->jml_rekomen;
-        $formatted_persen_selesai = 'N/A';
-        $formatted_persen_dalam = 'N/A';
-        $formatted_persen_belum = 'N/A';
+        // $rekom = $total->jml_rekomen;
+        // $formatted_persen_selesai = 'N/A';
+        // $formatted_persen_dalam = 'N/A';
+        // $formatted_persen_belum = 'N/A';
 
-        if ($rekom != 0) {
-            $jml_selesai = $total->jml_selesai;
-            $persenSelesai = $jml_selesai / $rekom * 100;
-            $formatted_persen_selesai = number_format($persenSelesai, 0) . '%';
+        // if ($rekom != 0) {
+        //     $jml_selesai = $total->jml_selesai;
+        //     $persenSelesai = $jml_selesai / $rekom * 100;
+        //     $formatted_persen_selesai = number_format($persenSelesai, 0) . '%';
 
-            $jml_dalam = $total->jml_dalam;
-            $persenDalam = $jml_dalam / $rekom * 100;
-            $formatted_persen_dalam = number_format($persenDalam, 0) . '%';
+        //     $jml_dalam = $total->jml_dalam;
+        //     $persenDalam = $jml_dalam / $rekom * 100;
+        //     $formatted_persen_dalam = number_format($persenDalam, 0) . '%';
 
-            $jml_belum = $total->jml_belum;
-            $persenBelum = $jml_belum / $rekom * 100;
-            $formatted_persen_belum = number_format($persenBelum, 0) . '%';
-        }
+        //     $jml_belum = $total->jml_belum;
+        //     $persenBelum = $jml_belum / $rekom * 100;
+        //     $formatted_persen_belum = number_format($persenBelum, 0) . '%';
+        // }
 
-        $selesai = $jml_selesai . ' => ' . $formatted_persen_selesai;
-        $dalam = $jml_dalam . ' => ' . $formatted_persen_dalam;
-        $belum = $jml_belum . ' => ' . $formatted_persen_belum;
+        // $selesai = $jml_selesai . ' => ' . $formatted_persen_selesai;
+        // $dalam = $jml_dalam . ' => ' . $formatted_persen_dalam;
+        // $belum = $jml_belum . ' => ' . $formatted_persen_belum;
 
-        $data[] = [
-            [
-                '',
-                'Jumlah : ',
-                $total->jml_temuan,
-                'Rp ' . number_format($total->total_temuan, 0, ',', '.'),
-                $total->jml_rekomen,
-                $selesai,
-                $dalam,
-                $belum,
-                'Rp ' . number_format($total->total_rekomendasi, 0, ',', '.'),
-                'Rp ' . number_format($total->total_setor, 0, ',', '.'),
-                'Rp ' . number_format($total->total_dalam, 0, ',', '.'),
-                'Rp ' . number_format($total->total_sisa, 0, ',', '.'),
-            ],
-        ];
+        // $data[] = [
+        //     [
+        //         '',
+        //         'Jumlah : ',
+        //         $total->jml_temuan,
+        //         'Rp ' . number_format($total->total_temuan, 0, ',', '.'),
+        //         $total->jml_rekomen,
+        //         $selesai,
+        //         $dalam,
+        //         $belum,
+        //         'Rp ' . number_format($total->total_rekomendasi, 0, ',', '.'),
+        //         'Rp ' . number_format($total->total_setor, 0, ',', '.'),
+        //         'Rp ' . number_format($total->total_dalam, 0, ',', '.'),
+        //         'Rp ' . number_format($total->total_sisa, 0, ',', '.'),
+        //     ],
+        // ];
 
         return Excel::download(new ExportsLaporanRekapitulasi($data), 'laporan_rekapitulasi_' . date('Y-m-d_H-i-s') . '.xlsx');
     }
@@ -354,25 +355,25 @@ class LaporanRekapitulasiDataTable extends DataTable
             ->groupBy('temuans.lhp_id')
             ->get();
 
-        $total =
-            Temuans::with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
-            ->select(
-                'temuans.lhp_id',
-                'temuans.id',
-                DB::raw('(SELECT COUNT(id) FROM temuans )as jml_temuan'),
-                DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) as total_temuan'),
-                DB::raw('(SELECT COUNT(id) FROM rekomendasies) as jml_rekomen'),
-                DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies) as total_rekomendasi'),
-                DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts ) as total_setor'),
-                DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts) as total_dalam'),
-                DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) as total_sisa'),
-                DB::raw('(SELECT COUNT(nilai_selesai) FROM tindak_lanjuts WHERE nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies )) as jml_selesai'),
-                DB::raw('(SELECT COUNT(nilai_dalam_proses) FROM tindak_lanjuts WHERE nilai_dalam_proses != 0 ) as jml_dalam'),
-                DB::raw('(SELECT COUNT(id) FROM rekomendasies WHERE rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as jml_belum'),
-            )
-            ->leftjoin('lhps', 'temuans.lhp_id', '=', 'lhps.id')
-            ->groupBy('temuans.lhp_id', 'temuans.id')
-            ->first();
+        // $total =
+        //     Temuans::with(['obrik', 'tindakan', 'lhp', 'rekomendasi'])
+        //     ->select(
+        //         'temuans.lhp_id',
+        //         'temuans.id',
+        //         DB::raw('(SELECT COUNT(id) FROM temuans )as jml_temuan'),
+        //         DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) as total_temuan'),
+        //         DB::raw('(SELECT COUNT(id) FROM rekomendasies) as jml_rekomen'),
+        //         DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies) as total_rekomendasi'),
+        //         DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts ) as total_setor'),
+        //         DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts) as total_dalam'),
+        //         DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) as total_sisa'),
+        //         DB::raw('(SELECT COUNT(nilai_selesai) FROM tindak_lanjuts WHERE nilai_selesai = (SELECT MAX(nilai_rekomendasi) FROM rekomendasies )) as jml_selesai'),
+        //         DB::raw('(SELECT COUNT(nilai_dalam_proses) FROM tindak_lanjuts WHERE nilai_dalam_proses != 0 ) as jml_dalam'),
+        //         DB::raw('(SELECT COUNT(id) FROM rekomendasies WHERE rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as jml_belum'),
+        //     )
+        //     ->leftjoin('lhps', 'temuans.lhp_id', '=', 'lhps.id')
+        //     ->groupBy('temuans.lhp_id', 'temuans.id')
+        //     ->first();
 
         $inspektur =
             DB::table('inspekturs')
@@ -387,7 +388,7 @@ class LaporanRekapitulasiDataTable extends DataTable
             ->whereNull('inspekturs.deleted_at')
             ->first();
 
-        $pdf = Pdf::loadView('pages.pdf.laporan_rekapitulasi', compact('data', 'total', 'inspektur', 'wilayah'))->setPaper('legal', 'landscape');
+        $pdf = Pdf::loadView('pages.pdf.laporan_rekapitulasi', compact('data', 'inspektur', 'wilayah'))->setPaper('legal', 'landscape');
         return $pdf->download('laporan_rekapitulasi_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 }

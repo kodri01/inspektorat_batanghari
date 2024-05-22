@@ -26,9 +26,8 @@
                                     <input type="hidden" name="nilai_sisa" value="{{ $tindakan->nilai_sisa }}">
                                     <input type="hidden" name="nilai_dalam_proses"
                                         value="{{ $tindakan->nilai_dalam_proses }}">
-                                    <input type="hidden" name="rekomen" value="{{ $rekomen->nilai_rekomendasi }}">
                                     <input type="hidden" name="statusTl" value="{{ $tindakan->status_tl }}">
-
+                                    <input type="hidden" name="rekomen" value="{{ $rekomen->nilai_rekomendasi }}">
                                     <div class="form-group">
                                         <label>Obrik</label>
                                         <input type="text" disabled
@@ -64,6 +63,14 @@
                                             name="nilai_tl" value="{{ old('nilai_tl') }}"
                                             placeholder="Masukan Nilai Tindak Lanjut">
                                         @error('nilai_tl')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label>File</label>
+                                        <input type="file" class="form-control @error('file') is-invalid @enderror"
+                                            name="file">
+                                        @error('file')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>

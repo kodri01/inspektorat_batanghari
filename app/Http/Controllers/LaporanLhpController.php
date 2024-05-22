@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\DataTables\LaporanLHPDataTable;
 use App\Models\Obrik;
 use App\Models\TindakLanjut;
-use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

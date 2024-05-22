@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('lhp', [LhpController::class, 'store'])->name('lhp.store');
         Route::get('lhp/edit/{id}', [LhpController::class, 'edit'])->name('lhp.edit');
         Route::post('lhp/update/{id}', [LhpController::class, 'update'])->name('lhp.update');
+        Route::post('lhp/delete/{id}', [LhpController::class, 'destroy'])->name('lhp.delete');
     });
 
     Route::group(['middleware' => ['permission:temuan-list|temuan-create|temuan-edit|temuan-delete']], function () {

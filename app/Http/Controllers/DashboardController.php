@@ -47,7 +47,7 @@ class DashboardController extends Controller
             $dalamProses = TindakLanjut::where('wilayah_id', Auth::user()->wilayah_id)->where('status_tl', 'Dalam Proses')->count();
             $belum = TindakLanjut::select(
                 DB::raw('(SELECT COUNT(id) FROM rekomendasies WHERE rekomendasies.id NOT IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as belum'),
-            )->first();
+            )->where('wilayah_id', Auth::user()->wilayah_id)->first();
             return view('pages.dashboard.index', compact('title', 'judul', 'obrik', 'temuan', 'tindakan', 'selesai', 'dalamProses', 'belum'));
         }
     }

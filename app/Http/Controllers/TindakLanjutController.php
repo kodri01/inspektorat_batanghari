@@ -220,33 +220,18 @@ class TindakLanjutController extends Controller
             $statusTl = "Selesai";
         }
 
+        $namefile = str_replace(' ', '_', $request->file->getClientOriginalName());
+        $filename  = $namefile . '_' . time() . '.' . $request->file->extension();
+        $request->file->move(public_path('uploads'), $filename);
+
         $tindakan = TindakLanjut::find($id);
-        // $tindak = [
-        //     'status' => $request->statusTl,
-        //     'nilaiSisaAwal' => $request->nilai_sisa,
-        //     'nilaiRekomen' => $request->rekomen,
-        //     'nilaiTindak' => $request->nilai_tl,
-        //     'nilaiDalamProses' => $request->nilai_dalam_proses,
-        //     'nilaiSelesaiAwal' => $request->nilai_selesai,
-        //     'nilaiSelesai' => $nilaiSelesaiAwal + $nilaiDalamProses,
-
-        //     $nilaiTindak,
-        //     'nilai_tindak2' => $nilaiTindak == $nilaiRekomen - $nilaiDalamProses,
-
-        //     'nilaiDalam' => $nilaiDalam,
-        //     'finalSelesai' => $finalSelesai,
-        //     'nilaiSisa' => $nilaiSisa,
-        //     'nilaiSetor' => $nilaiSetor,
-        //     'statusTl' => $statusTl,
-        // ];
-
-        // dd($tindak);
         $tindakan->update([
             'status_tl' => $statusTl,
             'nilai_selesai' => $finalSelesai,
             'nilai_dalam_proses' => $nilaiDalam,
             'nilai_sisa' => $nilaiSisa,
             'nilai_setor' => $nilaiSetor,
+            'file' => $namefile,
         ]);
 
         return redirect()->route('tindakan')

@@ -29,20 +29,22 @@ class LHPDataTable extends DataTable
             ->addColumn('action', function ($row) {
                 $buttons = '<div class="btn-group gap-2">';
                 // $buttons .= '<a href="' . route('dashboard', ['id' => $row->id]) . '" class="btn btn-sm btn-success">Role</a>';
-                $buttons .= '<a href="' . route('lhp.edit', ['id' => $row->id]) . '" class="btn btn-sm btn-primary">Edit</a>';
-                //                 $buttons .= '
-                // <a href="#" class="btn btn-sm btn-danger" onclick="event.preventDefault(); 
-                //     if(confirm(\'Anda yakin akan menghapus data ini?\')) {
-                //         document.getElementById(\'form-delete-' . $row->id . '\').submit(); 
-                //     } else {
-                //         return false;
-                //     }"
-                // >
-                //     Delete
-                // </a>
-                // <form id="form-delete-' . $row->id . '" action="' . route('obrik.delete', ['id' => $row->id]) . '" method="post" class="d-none">
-                //     ' . csrf_field() . '
-                // </form>';
+                $buttons .= '<a href="' . asset('uploads/' . $row->upload) . '" class="btn btn-sm btn-success"><i
+                class="fas fa-download my-1"></i></a>';
+                $buttons .= '<a href="' .  route('lhp.edit', ['id' => $row->id]) . '" class="btn btn-sm btn-primary">Edit</a>';
+                $buttons .= '
+                <a href="#" class="btn btn-sm btn-danger" onclick="event.preventDefault(); 
+                    if(confirm(\'Anda yakin akan menghapus data ini?\')) {
+                        document.getElementById(\'form-delete-' . $row->id . '\').submit(); 
+                    } else {
+                        return false;
+                    }"
+                >
+                    Delete
+                </a>
+                <form id="form-delete-' . $row->id . '" action="' . route('lhp.delete', ['id' => $row->id]) . '" method="post" class="d-none">
+                    ' . csrf_field() . '
+                </form>';
                 $buttons .= '</div>';
 
                 return $buttons;

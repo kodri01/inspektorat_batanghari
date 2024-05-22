@@ -58,11 +58,8 @@
                             <h4>Total Tindak Lanjut</h4>
                         </div>
                         <div class="card-body">
-                            @if ($belum != null)
-                                <h2> {{ $belum->belum }} </h2>
-                            @else
-                                <h2> 0 </h2>
-                            @endif
+                            <h2> {{ $tindakan }} </h2>
+
                         </div>
                     </div>
                 </div>
@@ -107,7 +104,12 @@
                             <h4>Tindak Lanjut Belum Diproses</h4>
                         </div>
                         <div class="card-body">
-                            <h2> {{ $belum->belum }} </h2>
+                            {{-- <h2> {{ $belum->belum }} </h2> --}}
+                            @if ($belum != null)
+                                <h2> {{ $belum->belum }} </h2>
+                            @else
+                                <h2> 0 </h2>
+                            @endif
                         </div>
                     </div>
                 </div>

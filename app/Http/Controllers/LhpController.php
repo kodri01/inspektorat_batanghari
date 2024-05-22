@@ -39,6 +39,8 @@ class LhpController extends Controller
             'no_lhp'     => 'required',
             'tgl_lhp'     => 'required',
             'judul'      => 'required',
+            'file' => 'required|mimes:pdf|max:5120'
+
         ];
 
         $messages = [
@@ -46,6 +48,9 @@ class LhpController extends Controller
             'no_lhp.required'       => 'Nomor LHP Wajib diisi',
             'tgl_lhp.required'  => 'Tanggal LHP Wajib diisi',
             'judul.required' => 'Judul LHP wajib diisi',
+            'file.required'  => 'File Registrasi Ulang wajib diupload',
+            'file.max'  => 'Ukuran File Maximal 5MB',
+            'file.mimes'  => 'File dalam bentuk PDF',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -54,15 +59,18 @@ class LhpController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $namefile = str_replace(' ', '_', $request->file->getClientOriginalName());
-        $filename  = $namefile . '_' . time() . '.' . $request->file->extension();
-        $request->file->move(public_path('uploads'), $filename);
+        // $namefile = str_replace(' ', '_', $request->file->getClientOriginalName());
+        // $filename  = $namefile . '_' . time() . '.' . $request->file->extension();
+        // $request->file->move(public_path('uploads'), $filename);
+
+        $filename5 = str_replace(' ', '_', $request->file->getClientOriginalName());
+        $request->file->move(public_path('uploads'), $filename5);
 
         $awal = 700;
         $input = $request->no_lhp;
+        $tahun = $request->tahun;
         $akhir = 'ITDA';
-        $year = date('Y');
-        $noLhp = $awal . '/' . $input . '/' . $akhir . '/' . $year;
+        $noLhp = $awal . '/' . $input . '/' . $akhir . '/' . $tahun;
 
 
         Lhp::create([
@@ -70,7 +78,7 @@ class LhpController extends Controller
             'no_lhp' => $noLhp,
             'tgl_lhp' => $request->tgl_lhp,
             'judul' => $request->judul,
-            'upload' => $filename,
+            'upload' => $filename5,
         ]);
 
         return redirect()->route('lhp')
@@ -137,8 +145,12 @@ class LhpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(lhp $lhp)
+    public function destroy($id)
     {
-        //
+        $lhp = Lhp::find($id);
+
+        $lhp->delete();
+        return redirect()->route('lhp')
+            ->with('error', 'LHP Deleted Successfully');
     }
 }

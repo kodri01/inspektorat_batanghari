@@ -46,12 +46,12 @@ class TemuansController extends Controller
         $role = Role::where('id', $modelrole->role_id)->first();
 
         if ($role->name == 'superadmin') {
-            $lhps = Lhp::get();
+            $lhps = Lhp::orderBy('tahun', 'asc')->get();
             $obriks = Obrik::get();
             $wilayah = Wilayah::get();
             return view('pages.temuan.add', compact('title', 'judul', 'obriks', 'lhps', 'wilayah'));
         } else {
-            $lhps = Lhp::get();
+            $lhps = Lhp::orderBy('tahun', 'asc')->get();
             $obriks = Obrik::where('wilayah_id', Auth::user()->wilayah_id)->get();
             return view('pages.temuan.add', compact('title', 'judul', 'obriks', 'lhps'));
         }
