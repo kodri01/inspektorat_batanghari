@@ -6,7 +6,7 @@
         <form action="{{ route('tologin') }}" method="post">
             <div class="login-form-title">
                 <h5 class="text-uppercase">selamat datang di aplikasi</h5>
-                <h3 class="text-uppercase"><strong>sistem informasi hasil pemeriksaan</strong></h3>
+                <h3 class="text-uppercase"><strong>sistem informasi data kasus</strong></h3>
                 <h5 class="text-uppercase">inspektorat daerah kabupaten batang hari</h5>
                 <img src="{{ url('assets/logo.png') }}" alt="" srcset="" class="mt-2"
                     style="width: 150px; height: auto;">

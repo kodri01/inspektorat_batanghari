@@ -125,7 +125,11 @@ class LaporanRincian implements FromCollection, WithHeadings,  WithTitle, Should
                             $event->sheet->getStyle('H' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                             $event->sheet->getRowDimension($event->sheet->getHighestRow())->setRowHeight(100);
                         } else {
-                            $penandaTangan = '';
+                            $penandaTangan = "Muara Bulian, " . date('d F Y') . "\n" . "INSPEKTUR" . "\n\n\n" . "Muhammad Rokim, SE,CGCAE" . "\n Pembina TK.1 " . "\n" . "NIP: 197104091995031003";
+                            $event->sheet->setCellValue('I' . ($event->sheet->getHighestRow() + 3), $penandaTangan);
+                            $event->sheet->getStyle('I' . ($event->sheet->getHighestRow()))->getAlignment()->setWrapText(true);
+                            $event->sheet->getStyle('I' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                            $event->sheet->getRowDimension($event->sheet->getHighestRow())->setRowHeight(100);
                         }
                     },
                 ];
@@ -192,6 +196,7 @@ class LaporanRincian implements FromCollection, WithHeadings,  WithTitle, Should
                             ],
                         ]);
 
+
                         $inspektur =
                             DB::table('inspekturs')
                             ->join('wilayahs', 'inspekturs.wilayah_id', '=', 'wilayahs.id')
@@ -205,7 +210,7 @@ class LaporanRincian implements FromCollection, WithHeadings,  WithTitle, Should
                             ->whereNull('inspekturs.deleted_at')
                             ->first();
                         if ($inspektur != null) {
-                            $penandaTangan = "Muara Bulian, " . date('d F Y') . "\n" . $inspektur->wilayah . "\n\n\n" . $inspektur->name . "\n NIP: " . $inspektur->nip . "\n" . $inspektur->pangkat_gol;
+                            $penandaTangan = "Muara Bulian, " . date('d F Y') . "\n" . $inspektur->wilayah . "\n\n\n" . $inspektur->name . "\n" . $inspektur->pangkat_gol . "\n NIP: " . $inspektur->nip;
                             $event->sheet->setCellValue('H' . ($event->sheet->getHighestRow() + 3), $penandaTangan);
                             $event->sheet->getStyle('H' . ($event->sheet->getHighestRow()))->getAlignment()->setWrapText(true);
                             $event->sheet->getStyle('H' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);

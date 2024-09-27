@@ -48,16 +48,49 @@
             background-color: #B7B2B2;
 
         }
+
+        .container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+            /* Jarak antara logo dan label */
+        }
+
+        .logo {
+            width: 60px;
+        }
+
+        .label {
+            text-align: center;
+            margin-top: -70px;
+        }
+
+        .text-bold {
+            font-weight: bold;
+            line-height: 1.5;
+            /* Spasi antar baris */
+        }
     </style>
 
 </head>
 
 <body>
-    <center>
-        <label class="text-bold">DAFTAR POKOK-POKOK HASIL PEMERIKSAAN</label><br>
-        <label class="text-bold"> APARAT PENGAWASAN FUNGSIONAL INSPEKTORAT KABUPATEN BATANG HARI </label><br>
-        <label class="text-bold"> TAHUN PEMERIKSAAN {{ $tahun }} </label>
-    </center>
+    <div class="container">
+        <div class="logo-container">
+            <img src="{{ public_path('assets/logo.png') }}" class="logo" alt="Logo">
+            <div class="label text-bold">
+                DAFTAR POKOK-POKOK HASIL PEMERIKSAAN <br>
+                APARAT PENGAWASAN FUNGSIONAL INSPEKTORAT KABUPATEN BATANG HARI <br>
+                TAHUN PEMERIKSAAN {{ $tahun }}
+            </div>
+        </div>
+    </div>
 
     <div class="">
         <table class="">
@@ -82,18 +115,9 @@
                 @foreach ($data as $d)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        @if (!in_array($d->obrik->jenis, $displayedJenis))
-                            <td>{{ $d->obrik->jenis }}</td>
-                            @php $displayedJenis[] = $d->obrik->jenis; @endphp
-                        @else
-                            <td></td>
-                        @endif
-                        @if (!in_array($d->lhp->no_lhp, $displayedJenis))
-                            <td>{{ $d->lhp->no_lhp }}</td>
-                            @php $displayedJenis[] = $d->lhp->no_lhp; @endphp
-                        @else
-                            <td></td>
-                        @endif
+                        <td>{{ $d->obrik->jenis }}</td>
+                        <td>{{ $d->lhp->no_lhp }}</td>
+
                         @if (!in_array($d->temuan->ringkasan, $displayedJenis))
                             <td>{{ $d->temuan->ringkasan }}</td>
                             @php $displayedJenis[] = $d->temuan->ringkasan; @endphp

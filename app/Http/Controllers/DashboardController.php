@@ -24,8 +24,8 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $title = 'Dashboard LHP Batanghari';
-        $judul = 'Dashboard LHP Batanghari';
+        $title = 'Dashboard Data Kasus Batanghari';
+        $judul = 'Dashboard Data Kasus Batanghari';
         $modelrole = DB::table('model_has_roles')->where('model_id', auth()->user()->id)->first();
         $role = Role::where('id', $modelrole->role_id)->first();
 

@@ -165,7 +165,11 @@ class LaporanRekapitulasi implements FromCollection, WithHeadings,  WithTitle,  
                     $event->sheet->getStyle('L' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $event->sheet->getRowDimension($event->sheet->getHighestRow())->setRowHeight(100);
                 } else {
-                    $penandaTangan = '';
+                    $penandaTangan = "Muara Bulian, " . date('d F Y') . "\n" . "INSPEKTUR" . "\n\n\n" . "Muhammad Rokim, SE,CGCAE" . "\n Pembina TK.1 " . "\n" . "NIP: 197104091995031003";
+                    $event->sheet->setCellValue('L' . ($event->sheet->getHighestRow() + 3), $penandaTangan);
+                    $event->sheet->getStyle('L' . ($event->sheet->getHighestRow()))->getAlignment()->setWrapText(true);
+                    $event->sheet->getStyle('L' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $event->sheet->getRowDimension($event->sheet->getHighestRow())->setRowHeight(100);
                 }
             },
         ];

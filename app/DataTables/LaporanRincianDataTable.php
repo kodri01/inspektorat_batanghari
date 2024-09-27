@@ -215,30 +215,27 @@ class LaporanRincianDataTable extends DataTable
 
                 $laporanRincian =
                     TindakLanjut::with(['obrik', 'temuan', 'rekomendasi'])
+                    ->join('obriks', 'tindak_lanjuts.obrik_id', '=', 'obriks.id')
                     ->select('tindak_lanjuts.*')
                     ->whereNull('tindak_lanjuts.deleted_at')
+                    ->orderBy('obriks.name', 'asc')
+                    ->orderBy('tindak_lanjuts.created_at', 'asc')
                     ->get();
 
-                $total =
-                    TindakLanjut::with(['obrik', 'temuan', 'rekomendasi'])
-                    ->select(
-                        'rekomendasies.id',
-                        'temuans.id',
-                        DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) AS total_nilai_temuan'),
-                        DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.id IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as total_nilai_rekomen'),
-                        DB::raw('(SELECT SUM(nilai_selesai) FROM tindak_lanjuts ) AS total_nilai_selesai'),
-                        DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts ) AS total_nilai_dalam_proses'),
-                        DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) AS total_nilai_sisa'),
-                        DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts ) AS total_setor')
-                    )
-                    ->Join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
-                    ->Join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
+                $total = TindakLanjut::join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+                    ->join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
                     ->whereNull('tindak_lanjuts.deleted_at')
-                    ->groupBy('rekomendasies.id', 'temuans.id')
+                    ->selectRaw('SUM(DISTINCT temuans.nilai_temuan) AS total_nilai_temuan')
+                    ->selectRaw('SUM(CASE WHEN tindak_lanjuts.rekomendasi_id = rekomendasies.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) AS total_nilai_rekomen')
+                    ->selectRaw('SUM(nilai_selesai) AS total_nilai_selesai')
+                    ->selectRaw('SUM(nilai_dalam_proses) AS total_nilai_dalam_proses')
+                    ->selectRaw('SUM(nilai_sisa) AS total_nilai_sisa')
+                    ->selectRaw('SUM(nilai_setor) AS total_setor')
                     ->first();
 
-
                 $displayedObrikIds = [];
+                $displayedTemuan = [];
+
                 foreach ($laporanRincian as $index => $laporan) {
                     $rpNilaiTemuan = 'Rp ' . number_format($laporan->temuan->nilai_temuan, 0, ',', '.');
                     $rpNilairekomen = 'Rp ' . number_format($laporan->rekomendasi->nilai_rekomendasi, 0, ',', '.');
@@ -246,6 +243,9 @@ class LaporanRincianDataTable extends DataTable
                     $rpNilaidalamProses = 'Rp ' . number_format($laporan->nilai_dalam_proses, 0, ',', '.');
                     $rpNilaiSisa = 'Rp ' . number_format($laporan->nilai_sisa, 0, ',', '.');
                     $rpNilaiSetor = 'Rp ' . number_format($laporan->nilai_setor, 0, ',', '.');
+
+                    $obrikId = $laporan->obrik_id;
+                    $temuanKey = $laporan->temuan->ringkasan . '|' . $laporan->temuan->nilai_temuan;
 
                     if (!in_array($laporan->obrik_id, $displayedObrikIds)) {
                         $data[] = [
@@ -259,19 +259,36 @@ class LaporanRincianDataTable extends DataTable
                             $rpNilaiSisa,
                             $rpNilaiSetor,
                         ];
-                        $displayedObrikIds[] = $laporan->obrik_id;
+                        $displayedObrikIds[] = $obrikId;
+                        $displayedTemuan[$obrikId] = [$temuanKey];
                     } else {
-                        $data[] = [
-                            $index + 1,
-                            '',
-                            '',
-                            '',
-                            $rpNilairekomen,
-                            $rpNilaiselesai,
-                            $rpNilaidalamProses,
-                            $rpNilaiSisa,
-                            $rpNilaiSetor,
-                        ];
+                        if (in_array($temuanKey, $displayedTemuan[$obrikId])) {
+                            $data[] = [
+                                $index + 1,
+                                '',
+                                '',
+                                '',
+                                $rpNilairekomen,
+                                $rpNilaiselesai,
+                                $rpNilaidalamProses,
+                                $rpNilaiSisa,
+                                $rpNilaiSetor,
+                            ];
+                        } else {
+                            $data[] = [
+                                $index + 1,
+                                '',
+                                '',
+                                $rpNilaiTemuan,
+                                $rpNilairekomen,
+                                $rpNilaiselesai,
+                                $rpNilaidalamProses,
+                                $rpNilaiSisa,
+                                $rpNilaiSetor,
+                            ];
+
+                            $displayedTemuan[$obrikId][] = $temuanKey;
+                        }
                     }
                 }
 
@@ -329,32 +346,30 @@ class LaporanRincianDataTable extends DataTable
                     ->whereNull('tindak_lanjuts.deleted_at')
                     ->get();
 
-                $total =
-                    TindakLanjut::with(['obrik', 'temuan', 'rekomendasi'])
-                    ->select(
-                        'rekomendasies.id',
-                        'temuans.id',
-                        DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) AS total_nilai_temuan'),
-                        DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.id IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as total_nilai_rekomen'),
-                        DB::raw('(SELECT SUM(nilai_selesai) FROM tindak_lanjuts ) AS total_nilai_selesai'),
-                        DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts ) AS total_nilai_dalam_proses'),
-                        DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) AS total_nilai_sisa')
-                    )
-                    ->Join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
-                    ->Join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
-                    ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
+                $userWilayah = auth()->user()->wilayah_id;
+                $total = TindakLanjut::join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+                    ->join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
+                    ->where('tindak_lanjuts.wilayah_id', $userWilayah)
                     ->whereNull('tindak_lanjuts.deleted_at')
-                    ->groupBy('rekomendasies.id', 'temuans.id')
+                    ->selectRaw('SUM(DISTINCT temuans.nilai_temuan) AS total_nilai_temuan')
+                    ->selectRaw('SUM(CASE WHEN tindak_lanjuts.rekomendasi_id = rekomendasies.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) AS total_nilai_rekomen')
+                    ->selectRaw('SUM(nilai_selesai) AS total_nilai_selesai')
+                    ->selectRaw('SUM(nilai_dalam_proses) AS total_nilai_dalam_proses')
+                    ->selectRaw('SUM(nilai_sisa) AS total_nilai_sisa')
                     ->first();
 
-
                 $displayedObrikIds = [];
+                $displayedTemuan = [];
+
                 foreach ($laporanRincian as $index => $laporan) {
                     $rpNilaiTemuan = 'Rp ' . number_format($laporan->temuan->nilai_temuan, 0, ',', '.');
                     $rpNilairekomen = 'Rp ' . number_format($laporan->rekomendasi->nilai_rekomendasi, 0, ',', '.');
                     $rpNilaiselesai = 'Rp ' . number_format($laporan->nilai_selesai, 0, ',', '.');
                     $rpNilaidalamProses = 'Rp ' . number_format($laporan->nilai_dalam_proses, 0, ',', '.');
                     $rpNilaiSisa = 'Rp ' . number_format($laporan->nilai_sisa, 0, ',', '.');
+
+                    $obrikId = $laporan->obrik_id;
+                    $temuanKey = $laporan->temuan->nilai_temuan;
 
                     if (!in_array($laporan->obrik_id, $displayedObrikIds)) {
                         $data[] = [
@@ -367,19 +382,34 @@ class LaporanRincianDataTable extends DataTable
                             $rpNilaidalamProses,
                             $rpNilaiSisa,
                         ];
-
-                        $displayedObrikIds[] = $laporan->obrik_id;
+                        $displayedObrikIds[] = $obrikId;
+                        $displayedTemuan[$obrikId] = [$temuanKey];
                     } else {
-                        $data[] = [
-                            $index + 1,
-                            '',
-                            '',
-                            '',
-                            $rpNilairekomen,
-                            $rpNilaiselesai,
-                            $rpNilaidalamProses,
-                            $rpNilaiSisa,
-                        ];
+                        if (in_array($temuanKey, $displayedTemuan[$obrikId])) {
+                            $data[] = [
+                                $index + 1,
+                                '',
+                                '',
+                                '',
+                                $rpNilairekomen,
+                                $rpNilaiselesai,
+                                $rpNilaidalamProses,
+                                $rpNilaiSisa,
+                            ];
+                        } else {
+                            $data[] = [
+                                $index + 1,
+                                '',
+                                '',
+                                $rpNilaiTemuan,
+                                $rpNilairekomen,
+                                $rpNilaiselesai,
+                                $rpNilaidalamProses,
+                                $rpNilaiSisa,
+                            ];
+
+                            $displayedTemuan[$obrikId][] = $temuanKey;
+                        }
                     }
                 }
 
@@ -411,8 +441,6 @@ class LaporanRincianDataTable extends DataTable
     public function pdfCustom()
     {
         $modelrole = DB::table('model_has_roles')->where('model_id', auth()->user()->id)->first();
-
-        // Pastikan $modelrole tidak null sebelum menggunakan first()
         if ($modelrole) {
             $role = Role::where('id', $modelrole->role_id)->first();
             // Pastikan $role tidak null sebelum menggunakan first()
@@ -421,26 +449,22 @@ class LaporanRincianDataTable extends DataTable
 
                 $data =
                     TindakLanjut::with(['obrik', 'temuan', 'rekomendasi'])
+                    ->join('obriks', 'tindak_lanjuts.obrik_id', '=', 'obriks.id')
                     ->select('tindak_lanjuts.*')
                     ->whereNull('tindak_lanjuts.deleted_at')
+                    ->orderBy('obriks.name', 'asc')
+                    ->orderBy('tindak_lanjuts.created_at', 'asc')
                     ->get();
 
-                $total =
-                    TindakLanjut::with(['obrik', 'temuan', 'rekomendasi'])
-                    ->select(
-                        'rekomendasies.id',
-                        'temuans.id',
-                        DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) AS total_nilai_temuan'),
-                        DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.id IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as total_nilai_rekomen'),
-                        DB::raw('(SELECT SUM(nilai_selesai) FROM tindak_lanjuts ) AS total_nilai_selesai'),
-                        DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts ) AS total_nilai_dalam_proses'),
-                        DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) AS total_nilai_sisa'),
-                        DB::raw('(SELECT SUM(nilai_setor) FROM tindak_lanjuts ) AS total_setor')
-                    )
-                    ->Join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
-                    ->Join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
+                $total = TindakLanjut::join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+                    ->join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
                     ->whereNull('tindak_lanjuts.deleted_at')
-                    ->groupBy('rekomendasies.id', 'temuans.id')
+                    ->selectRaw('SUM(DISTINCT temuans.nilai_temuan) AS total_nilai_temuan')
+                    ->selectRaw('SUM(CASE WHEN tindak_lanjuts.rekomendasi_id = rekomendasies.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) AS total_nilai_rekomen')
+                    ->selectRaw('SUM(nilai_selesai) AS total_nilai_selesai')
+                    ->selectRaw('SUM(nilai_dalam_proses) AS total_nilai_dalam_proses')
+                    ->selectRaw('SUM(nilai_sisa) AS total_nilai_sisa')
+                    ->selectRaw('SUM(nilai_setor) AS total_setor')
                     ->first();
 
                 $pdf = Pdf::loadView('pages.pdf.laporan_rincian', compact('data', 'total', 'tahun'))
@@ -458,22 +482,16 @@ class LaporanRincianDataTable extends DataTable
                     ->whereNull('tindak_lanjuts.deleted_at')
                     ->get();
 
-                $total =
-                    TindakLanjut::with(['obrik', 'temuan', 'rekomendasi'])
-                    ->select(
-                        'rekomendasies.id',
-                        'temuans.id',
-                        DB::raw('(SELECT SUM(nilai_temuan) FROM temuans) AS total_nilai_temuan'),
-                        DB::raw('(SELECT SUM(nilai_rekomendasi) FROM rekomendasies WHERE rekomendasies.id IN (SELECT rekomendasi_id FROM tindak_lanjuts)) as total_nilai_rekomen'),
-                        DB::raw('(SELECT SUM(nilai_selesai) FROM tindak_lanjuts ) AS total_nilai_selesai'),
-                        DB::raw('(SELECT SUM(nilai_dalam_proses) FROM tindak_lanjuts ) AS total_nilai_dalam_proses'),
-                        DB::raw('(SELECT SUM(nilai_sisa) FROM tindak_lanjuts ) AS total_nilai_sisa')
-                    )
-                    ->Join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
-                    ->Join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
-                    ->where('tindak_lanjuts.wilayah_id', auth()->user()->wilayah_id)
+                $userWilayah = auth()->user()->wilayah_id;
+                $total = TindakLanjut::join('temuans', 'tindak_lanjuts.temuan_id', '=', 'temuans.id')
+                    ->join('rekomendasies', 'tindak_lanjuts.rekomendasi_id', '=', 'rekomendasies.id')
+                    ->where('tindak_lanjuts.wilayah_id', $userWilayah)
                     ->whereNull('tindak_lanjuts.deleted_at')
-                    ->groupBy('rekomendasies.id', 'temuans.id')
+                    ->selectRaw('SUM(DISTINCT temuans.nilai_temuan) AS total_nilai_temuan')
+                    ->selectRaw('SUM(CASE WHEN tindak_lanjuts.rekomendasi_id = rekomendasies.id THEN rekomendasies.nilai_rekomendasi ELSE 0 END) AS total_nilai_rekomen')
+                    ->selectRaw('SUM(nilai_selesai) AS total_nilai_selesai')
+                    ->selectRaw('SUM(nilai_dalam_proses) AS total_nilai_dalam_proses')
+                    ->selectRaw('SUM(nilai_sisa) AS total_nilai_sisa')
                     ->first();
 
                 $inspektur =

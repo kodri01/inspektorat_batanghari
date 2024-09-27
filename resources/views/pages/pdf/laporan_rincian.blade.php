@@ -48,19 +48,64 @@
             background-color: #B7B2B2;
 
         }
+
+        .container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+            /* Jarak antara logo dan label */
+        }
+
+        .logo {
+            width: 60px;
+        }
+
+        .label {
+            text-align: center;
+            margin-top: -50px;
+        }
+
+        .label-irban {
+            text-align: center;
+            margin-top: -80px;
+        }
+
+        .text-bold {
+            font-weight: bold;
+            line-height: 1.5;
+            /* Spasi antar baris */
+        }
     </style>
 
 </head>
 
 <body>
-    <center>
-        <label class="text-bold">REKAPITULASI HASIL PEMANTAUAN TINDAK LANJUT HASIL PEMERIKSAAN INSPEKTORAT <br>
+    <div class="container">
+        <div class="logo-container">
+            <img src="{{ public_path('assets/logo.png') }}" class="logo" alt="Logo">
             @role('Irban')
-                PADA {{ $wilayah->name }} <br>
+                <div class="label-irban text-bold">
+                    REKAPITULASI HASIL PEMANTAUAN TINDAK LANJUT <br>
+                    HASIL PEMERIKSAAN INSPEKTORAT <br>
+                    PADA {{ $wilayah->name }} <br>
+                    TAHUN {{ $tahun }}
+                </div>
             @endrole
-            TAHUN {{ $tahun }}
-        </label>
-    </center>
+            @role('superadmin')
+                <div class="label text-bold">
+
+                    REKAPITULASI HASIL PEMANTAUAN TINDAK LANJUT HASIL PEMERIKSAAN INSPEKTORAT <br>
+                    TAHUN {{ $tahun }}
+                </div>
+            @endrole
+        </div>
+    </div>
 
     <div>
         <table>
@@ -80,16 +125,24 @@
                 </tr>
             </thead>
             <tbody>
-                @php $displayedJenis = []; @endphp
+                @php
+                    $displayedJenis = [];
+                    $displayedObrikNames = [];
+
+                @endphp
                 @foreach ($data as $d)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        @if (!in_array($d->obrik->jenis, $displayedJenis))
+                        @if (!in_array($d->obrik->jenis, $displayedJenis) || !in_array($d->obrik->name, $displayedObrikNames))
                             <td>{{ $d->obrik->jenis }}</td>
-                            @php $displayedJenis[] = $d->obrik->jenis; @endphp
+                            @php
+                                $displayedJenis[] = $d->obrik->jenis;
+                                $displayedObrikNames[] = $d->obrik->name;
+                            @endphp
                         @else
                             <td></td>
                         @endif
+                        {{-- <td>{{ $d->obrik->jenis }}</td> --}}
                         @if (!in_array($d->obrik->name, $displayedJenis))
                             <td>{{ $d->obrik->name }}</td>
                             @php $displayedJenis[] = $d->obrik->name; @endphp
@@ -128,6 +181,16 @@
                 </tr>
             </tfoot>
         </table>
+
+        @role('superadmin')
+            <div style="margin-left: 45rem;">
+                <label>Muara Bulian, {{ date('d F Y') }}</label><br>
+                <label>INSPEKTUR</label><br><br><br><br>
+                <label>Muhammad Rokim, SE.SE,CGCAE</label><br>
+                <label>Pembina TK.1</label><br>
+                <label>NIP : 197104091995031003</label>
+            </div>
+        @endrole
 
         @role('Irban')
             <div class="inpektur">

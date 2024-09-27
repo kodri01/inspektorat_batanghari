@@ -97,8 +97,11 @@ class LaporanRekap implements FromCollection, WithHeadings,  WithTitle, WithCust
                             ],
                         ]);
 
-                        foreach (range('B', 'K') as $column) {
+                        foreach (range('C', 'J') as $column) {
                             $event->sheet->getColumnDimension($column)->setWidth(18);  // Sesuaikan lebar sel di sini
+                        }
+                        foreach (range('K', 'K') as $column) {
+                            $event->sheet->getColumnDimension($column)->setWidth(26);  // Sesuaikan lebar sel di sini
                         }
                         foreach (range('A', 'A') as $column) {
                             $event->sheet->getColumnDimension($column)->setWidth(6);  // Sesuaikan lebar sel di sini
@@ -116,6 +119,12 @@ class LaporanRekap implements FromCollection, WithHeadings,  WithTitle, WithCust
                                 ],
                             ],
                         ]);
+
+                        $penandaTangan = "Muara Bulian, " . date('d F Y') . "\n" . "INSPEKTUR" . "\n\n\n" . "Muhammad Rokim, SE,CGCAE" . "\n Pembina TK.1 " . "\n" . "NIP: 197104091995031003";
+                        $event->sheet->setCellValue('K' . ($event->sheet->getHighestRow() + 3), $penandaTangan);
+                        $event->sheet->getStyle('K' . ($event->sheet->getHighestRow()))->getAlignment()->setWrapText(true);
+                        $event->sheet->getStyle('K' . ($event->sheet->getHighestRow()))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                        $event->sheet->getRowDimension($event->sheet->getHighestRow())->setRowHeight(100);
                     },
                 ];
             } else {

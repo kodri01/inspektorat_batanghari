@@ -48,14 +48,51 @@
             background-color: #B7B2B2;
 
         }
+
+        .container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+            /* Jarak antara logo dan label */
+        }
+
+        .logo {
+            width: 60px;
+        }
+
+        .label {
+            text-align: center;
+            margin-top: -50px;
+        }
+
+        .text-bold {
+            font-weight: bold;
+            line-height: 1.5;
+            /* Spasi antar baris */
+        }
     </style>
 
 </head>
 
 <body>
-    <center>
+    {{-- <center>
         <label class="text-bold">REKAP LHP BPK RI PERWAKILAN PROVINSI JAMBI</label>
-    </center>
+    </center> --}}
+
+    <div class="container">
+        <div class="logo-container">
+            <img src="{{ public_path('assets/logo.png') }}" class="logo" alt="Logo">
+            <div class="label text-bold">
+                REKAP LHP BPK RI PERWAKILAN PROVINSI JAMBI
+            </div>
+        </div>
+    </div>
 
     <div class="">
         <table class="">
@@ -96,6 +133,15 @@
                 @endforeach
             </tbody>
         </table>
+        @role('superadmin')
+            <div style="margin-left: 45rem">
+                <label>Muara Bulian, {{ date('d F Y') }}</label><br>
+                <label>INSPEKTUR</label><br><br><br><br>
+                <label>Muhammad Rokim, SE.SE,CGCAE</label><br>
+                <label>Pembina TK.1</label><br>
+                <label>NIP : 197104091995031003</label>
+            </div>
+        @endrole
     </div>
 </body>
 

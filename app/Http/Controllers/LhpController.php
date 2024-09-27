@@ -131,7 +131,7 @@ class LhpController extends Controller
 
         if ($request->file == !null) {
             $filename1 = str_replace(' ', '_', $request->file->getClientOriginalName());
-            $request->kk->move(public_path('uploads'), $filename1);
+            $request->file->move(public_path('uploads'), $filename1);
         } else {
             $filename1 = $request->filex;
         }

@@ -60,7 +60,7 @@
                                     class="fas fa-bars"></i></a></li>
                     </ul>
 
-                    <h4 class="text-white mt-2"><strong class="text-uppercase">sistem informasi lhp inspektorat
+                    <h4 class="text-white mt-2"><strong class="text-uppercase">sistem informasi data kasus inspektorat
                             daerah
                             batang hari</strong></h4>
 
@@ -85,14 +85,14 @@
                     <div class="sidebar-brand">
                         <a href="" class="text-uppercase"><img src="{{ url('assets/logo.png') }}" alt="LP"
                                 width="30px">
-                            lhp batang hari</a>
+                            inspektorat Daerah</a>
                     </div>
                     <div class="sidebar-brand sidebar-brand-sm">
                         <a href=""><img src="{{ url('assets/logo.png') }}" alt="LP" width="47px"></a>
                     </div>
                     <ul class="sidebar-menu">
                         <li class="menu-header">Menu</li>
-                        <li <?php if ($title == 'Dashboard LHP Batanghari') {
+                        <li <?php if ($title == 'Dashboard Data Kasus Batanghari') {
                             echo 'class="active"';
                         } ?>><a class="nav-link" href="{{ route('dashboard') }}"><i
                                     class="fas fa-fire"></i>
